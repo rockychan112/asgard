@@ -2,80 +2,86 @@
 
 # Asgard
 
-**同一条新闻，只挑出跟你有关的利害，和你这周真能做的事；跟你无关，就直说无关。**
+**同一条新闻，只告诉你跟你有关的部分；无关，就直说无关。**
 
 <a href="https://rockychan112.github.io/asgard/"><b>在线 Demo</b></a> · <a href="./eval/README.md">Eval 报告</a> · <a href="./README.en.md">English</a>
 
-<img alt="status: pre-alpha" src="https://img.shields.io/badge/status-pre--alpha-d97706"> <img alt="python 3.11+" src="https://img.shields.io/badge/python-3.11+-3b82f6">
+<img alt="status: pre-alpha" src="https://img.shields.io/badge/status-pre--alpha-d97706"> <img alt="python 3.11+" src="https://img.shields.io/badge/python-3.11+-3b82f6"> <img alt="license: MIT" src="https://img.shields.io/badge/license-MIT-10b981">
 
 </div>
 
-Asgard 按你是谁、在做什么、在意什么，把一条新闻重写成只对你成立的那部分——它怎么影响你，你这周能做什么。跟你没关系时，它直说无关，不硬凑一个角度。
+每天的资讯都在讲"世界发生了什么"，没有一条告诉你"这跟你有什么关系、你该干嘛"。Asgard 读你的画像，把一条新闻折射成你的利害和这周能做的动作；跟你无关的，直接跳过。
 
-同一条真实新闻，发给四个不同的人——三个人各有各的利害和动作，第四个，跳过：
+同一条新闻，四个人，四种结果：
 
-[![同一条高 stakes 新闻，折射给四个身份：三条给出各自的利害与行动，第四条诚实 SKIP](design/hero.png)](https://rockychan112.github.io/asgard/)
+[![同一条新闻折射给四个身份：三条各自的利害与行动，第四条诚实跳过](design/hero.png)](https://rockychan112.github.io/asgard/)
 
-<p align="center"><sub>人人拿到同一份中立事实，变的只是它对谁意味着什么；最后一张是诚实 SKIP　·　<a href="https://rockychan112.github.io/asgard/">▶ 可交互版</a></sub></p>
+<p align="center"><sub>三张卡各有各的利害和动作，每条都标注依据；第四张，跳过　·　<a href="https://rockychan112.github.io/asgard/">▶ 可交互版</a></sub></p>
 
-## 为什么这不是"套一段 prompt"
+## 跟其它工具的差别
 
-三个刻意的设计，把 Asgard 和"给通用助手套一段人设"分开：
-
-1. **事实层 / 解释层分离** — 所有身份共享同一份中立事实（`Event`）；变的只有后果、优先级和行动。个性化不改写发生了什么，也不制造信息茧房。
-2. **引得到依据才写** — 每条利害、每个行动，都必须引用你画像里的某条 `P-id`，引不到就不写。你看得见它"凭什么这么说"。
-3. **诚实 SKIP** — 与你无关就直说无关。敢说"这条不是你的"，是套壳系统最难装出来的能力。
-
-## 它做了件同类工具不会做的事：公开测试自己会不会翻车
-
-大部分"个性化"工具，靠的是让你自己相信它懂你。Asgard 反过来——它附带一套公开的实验，专门用来证伪自己：要是它的个性化只是"换皮"，这套测试就该抓到。
-
-做法：改你画像里的一个事实，理论上只有依赖它的那条结论该跟着变。拿它跟"把整份画像当 prompt 丢给通用助手"在同一个模型上比，唯一的变量是脚手架。判据发布前就登记死：两项指标都得赢，任一打平就走 Plan B。**跑完，一项打平了，没赢。** 那就走 Plan B，如实说，不藏。
-
-真正赢的是两件更朴素的事：它更可靠地说出"这条不是你的"（SKIP 纪律），每条判断都挂着一条你能翻出来核对的依据（可审计）。不是"更懂你"的魔法——是更有纪律、更透明。
-
-> It is built to be able to falsify its own tool. It did.
-
-完整方法、数字、失败卡在哪、局限在哪 → [`eval/`](eval/README.md)
+| | 新闻 App / 聚合器 | ChatGPT + 一段人设 | Asgard |
+|---|---|---|---|
+| 同一条新闻你拿到什么 | 人人同一份摘要 | 一段"对你的分析" | 你的利害 + 这周能做的动作 |
+| 和你无关时 | 照样推给你 | 常硬找一个角度 | 直说"跳过"，给理由 |
+| 它凭什么这么判断 | 黑盒推荐 | 说不清 | 每条标注引用了你画像里哪条事实（`P-id`），可查 |
+| 你的画像 | 平台算法猜的 | 一段散文 | 一个 YAML 文件，逐条事实，自己改、可版本化 |
+| 数据在哪 | 平台服务器 | 对话记录里 | 本地文件 + 你自己的模型端点，零遥测 |
 
 ## 上手
 
 ```bash
+git clone https://github.com/rockychan112/asgard && cd asgard
 uv venv && uv pip install -e .
 
-# 任何 OpenAI 兼容端点：DeepSeek / 本地 Ollama / OpenAI …
+# 任何 OpenAI 兼容端点都行：DeepSeek / 本地 Ollama / OpenAI …
 export OPENAI_BASE_URL=...
 export OPENAI_API_KEY=...
 export ASGARD_MODEL=...
-
-# 把一条内置新闻折射给全部内置 persona（其中有人会 SKIP）
-asgard brief fixture:hormuz
-
-# 只看某一个人
-asgard brief fixture:hormuz --persona travel-lead
 ```
-
-跑那套会证伪自己的 eval（裁判用一个非 Claude 的模型，且盲于自己在评哪一臂）：
 
 ```bash
-export GLM_BASE_URL=... GLM_API_KEY=... GLM_MODEL=...   # 裁判 / judge
-asgard eval --k 3 --report eval/report.md              # 或 --dry-run 离线验管线
+# 内置新闻 × 全部内置 persona（其中一个会跳过）
+asgard brief fixture:hormuz
+
+# 只看某一个人，或直接喂一条新闻链接
+asgard brief fixture:hormuz --persona travel-lead
+asgard brief https://example.com/some-news
 ```
 
-## persona 是一份契约，不是一段话
+## 把 persona 换成你自己
 
-`personas/*.yaml` 里每个 persona 是一份**结构化契约**——一条条带 `P-id` 的事实，不是一段自然语言 prompt。你能打开它、改它、给它记版本；每条折射引用的，就是这里的某几条。它是可审计 trace 的地基，也是"越用越懂你"要长在上面的东西。
+persona 就是一个 YAML 文件，一条事实一行：
 
-## Roadmap
+```yaml
+# personas/travel-lead.yaml
+label: 在线旅游平台 · 商业分析师
+facts:
+  P-role: 在线旅游(OTA)平台商业分析师，做机票业务的经营与数据分析
+  P-fuel: 平台主营机票预订，业务营收与出行需求、航空燃油成本高度绑定
+  P-cares: AI 数据分析/用户研究工具、出行与消费趋势
+  P-ignores: 与旅游、机票经营、数据分析都无关的资讯
+```
 
-- ✅ **W0 · `brief`** — persona → 中立事实 → 按人折射 + trace + 诚实 SKIP。已跑通（DeepSeek / 任意 OpenAI 兼容端点实测）。
-- ✅ **W1 · `eval`** — 预登记反事实 eval：三臂对比 + trace + SKIP 纪律。已跑通，结论见上。
-- ⬜ `init` — 交互式建 persona。
-- ⬜ `feedback` + 长期记忆 — 越用越懂你（up / down / correct / …；演进只走"建议 → 你确认"，绝不静默改你的身份）。
-- ⬜ 本地 embedding / 全本地 / 零遥测。
+复制一份，把事实换成你的。输出里的每条判断会标注它用了哪几条（`P-id`），删掉那条事实，相应的判断就消失。
 
-诚实地说，今天的 Asgard 是这么个东西：**一套可复现的个性化记忆协议 + 一套能弄死自己的 eval + 一个更克制、可审计的 brief 工具。** 它会不会长成更大的东西，公开地做、公开地验。
+## 常见问题
 
----
+**和"给 ChatGPT 写一段自我介绍"有什么区别？**
+三点：事实和解读分两层，所有人共享同一份中立事实，个性化不会改写新闻本身；每条判断必须引用画像里的具体事实，引不到就不写；无关时跳过，不硬凑。
 
-<div align="center"><sub>Local-first · bring your own model · zero telemetry</sub></div>
+**它真的比"通用助手 + 人设 prompt"更懂我吗？**
+不一定。我们拿公开的反事实 eval 测过（判据发布前登记死）：特异性打平，没赢。稳定赢的是两件事——该跳过时更少硬凑（误报 2/13 vs 4/13），以及每条判断有可查的依据。方法和全部数字在 [`eval/`](eval/README.md)。
+
+**会不会为了显得有用，硬编一个角度？**
+这正是 eval 盯着测的（SKIP 纪律）。demo 里第四个人就是真实输出：模型明确说"这跟你无关"。
+
+**我的数据去哪了？**
+哪也不去。画像是本地 YAML，模型用你自己配的端点，没有遥测。
+
+**现在能用到什么程度？**
+`brief`（折射新闻）和 `eval`（跑测试）能用。交互式建 persona 和长期记忆还没做，画像先手编。
+
+## License
+
+[MIT](LICENSE) · Copyright (c) 2026 rockychan112
