@@ -2,6 +2,8 @@
 name = "asgard"
 version = "0.0.1"
 description = "Your private intelligence officer. It refracts the same news into the stakes and actions that are yours alone."
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = [
     "openai>=1.40",
