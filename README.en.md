@@ -1,18 +1,22 @@
-<!-- lang-switch --> [简体中文](./README.md)　·　**English**
+<div align="center">
 
 # Asgard
 
-**One piece of news, cut down to what's actually at stake for you and what you can do about it this week — and when it isn't yours, it says so.**
+**One piece of news, cut down to the stakes that are actually yours and the moves you can make this week — and when it isn't yours, it says so.**
 
-Asgard rewrites a news item into the part that's yours — given who you are, what you do, what you care about: how it hits you, what you can do this week. When it doesn't touch you, it says "not yours" instead of inventing an angle.
+<a href="https://rockychan112.github.io/asgard/"><b>Live demo</b></a> · <a href="./eval/README.md">Eval report</a> · <a href="./README.md">简体中文</a>
 
-Below is one real news item sent to four different people: three get their own stakes and moves; the fourth — skip.
+<img alt="status: pre-alpha" src="https://img.shields.io/badge/status-pre--alpha-d97706"> <img alt="python 3.11+" src="https://img.shields.io/badge/python-3.11+-3b82f6">
+
+</div>
+
+Asgard rewrites a news item into the part that's yours — given who you are, what you do, and what you care about: how it hits you, and what you can do about it this week. When it doesn't touch you, it says "not yours" instead of inventing an angle.
+
+One real news item, sent to four different people — three get their own stakes and moves; the fourth, a skip:
 
 [![One high-stakes news item refracted to four identities: three get their own stakes and actions, the fourth is an honest SKIP](design/hero.png)](https://rockychan112.github.io/asgard/)
 
-<p align="center"><sub>One news item (a fixed sample), one shared set of neutral facts — only what it means per person changes. The last card is an honest SKIP.　·　<a href="https://rockychan112.github.io/asgard/">▶ Open the interactive demo</a></sub></p>
-
-`pre-alpha` — an open exploration, not a finished product. What runs today: `brief` (refract one news item per person) and `eval` (the test below).
+<p align="center"><sub>Everyone gets the same neutral facts — only what it means per person changes; the last card is an honest SKIP　·　<a href="https://rockychan112.github.io/asgard/">▶ interactive version</a></sub></p>
 
 ## Why this isn't a persona-prompt wrapper
 
@@ -20,7 +24,7 @@ Three deliberate choices separate Asgard from "hand a general assistant a charac
 
 1. **Facts and reading are separate layers** — every persona shares one neutral set of facts (`Event`); only the consequences, priorities, and actions change. Personalization never rewrites what happened, and never builds an echo chamber.
 2. **No claim without a citation** — every stake and every action must cite a `P-id` from your profile, or it doesn't ship. You can see *why* it says what it says.
-3. **An honest SKIP** — when it isn't yours, it says so. (Saying "this one isn't for you" is the one thing a wrapper can't fake.)
+3. **An honest SKIP** — when it isn't yours, it says so. Saying "this one isn't for you" is the one thing a wrapper can't fake.
 
 ## It does what similar tools won't: it tests itself, in public, for faking it
 
@@ -32,7 +36,7 @@ What it *does* win is two humbler things: it's more reliable at saying "this one
 
 > It is built to be able to falsify its own tool. It did.
 
-Full method, numbers, where it failed, the limits → [`eval/`](eval/README.md)
+Full method, numbers, where it failed, and the limits → [`eval/`](eval/README.md)
 
 ## Quickstart
 
@@ -73,4 +77,5 @@ Each persona in `personas/*.yaml` is a **structured contract** — id'd facts yo
 Honestly, today Asgard is this: **a reproducible personalization-memory protocol, a harness that can sink its own claims, and a more restrained, auditable brief tool.** Whether it grows into more gets decided in the open.
 
 ---
-<sub>Local-first · bring your own model · zero telemetry</sub>
+
+<div align="center"><sub>Local-first · bring your own model · zero telemetry</sub></div>
