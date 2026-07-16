@@ -1,0 +1,14 @@
+# 你的信源列表 —— 复制到 ~/.asgard/feeds.yaml，换成你自己常看的源。
+# 支持 RSS/Atom 地址；没有 RSS 的站点可以直接给首页 URL，由 agent 尝试发现。
+# 建议 3–8 个源起步：源太多会让每天的候选量和模型开销失控。
+
+feeds:
+  - name: Hacker News
+    url: https://news.ycombinator.com/rss
+  - name: Reuters 商业
+    url: https://feeds.reuters.com/reuters/businessNews
+  - name: 少数派
+    url: https://sspai.com/feed
+
+# 可选：每天最多处理的候选条数（超出按时间取最新）
+max_items_per_day: 20

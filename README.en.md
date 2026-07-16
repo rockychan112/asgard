@@ -28,6 +28,23 @@ Same news, four people, four different results:
 | Your profile | Guessed by the platform | A paragraph | A file, one fact per line |
 | Your data | Their servers | Chat logs | All local |
 
+## Install into your agent, get one brief a day
+
+Asgard also ships as a skill for agents like Claude Code / Codex / Cursor: every day it reads your feeds and drops a brief at `briefs/2026-07-15.md`.
+
+```bash
+npx skills add https://github.com/rockychan112/asgard
+```
+
+Three steps: install the skill → write your profile from `examples/profile.sample.yaml` → have the agent schedule a daily job (no scheduler in your agent? just say "asgard daily brief" whenever — it still works).
+
+What the skill installs is a **protocol** — the fact contract, the citation rule, the skip rule — not a magic prompt.
+
+Two things up front:
+
+- With the `asgard` CLI installed, the skill calls it (citation checks enforced in code); without it, your agent runs the protocol itself and the brief is honestly tagged `engine: llm` — the repo's eval only vouches for the CLI path.
+- On a day when nothing concerns you, the brief still arrives: "Nothing worth your time today, checked N items." That's the product working, not failing.
+
 ## Quickstart
 
 ```bash
@@ -91,7 +108,7 @@ That's exactly what the exam watches. The skip cards in the demo are real output
 
 **How usable is it today?**
 
-`brief` (refract a news item) and `eval` (run the exam) work. Building the profile is hand-edited for now — interactive setup and long-term memory aren't built yet.
+`brief` (refract one news item), `eval` (run the exam), and the daily-brief skill (above) work. Building the profile is hand-edited for now — interactive setup and long-term memory aren't built yet.
 
 ## License
 

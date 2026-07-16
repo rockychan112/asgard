@@ -14,19 +14,32 @@ PERSONA_DIR = Path(__file__).resolve().parent.parent / "personas"
 
 def _personas(slug: str | None) -> list[Persona]:
     if slug:
-        path = PERSONA_DIR / f"{slug}.yaml"
+        # a slug of a built-in persona, or a path to the user's own profile file
+        path = Path(slug).expanduser()
+        if not (path.suffix in (".yaml", ".yml") and path.exists()):
+            path = PERSONA_DIR / f"{slug}.yaml"
         if not path.exists():
-            sys.exit(f"未知 persona：{slug}（{PERSONA_DIR} 下没有 {slug}.yaml）")
+            sys.exit(f"未知 persona：{slug}（不是文件路径，{PERSONA_DIR} 下也没有 {slug}.yaml）")
         return [Persona.load(path)]
     return [Persona.load(p) for p in sorted(PERSONA_DIR.glob("*.yaml"))]
 
 
 def _cmd_brief(args: argparse.Namespace) -> None:
+    import dataclasses
+    import json
+
     article = load(args.target)
     event = extract_event(article)
+    cards = [refract(event, persona) for persona in _personas(args.persona)]
+    if args.json:  # machine-readable: the skill/orchestrator path (engine: cli)
+        print(json.dumps(
+            {"event": dataclasses.asdict(event), "cards": [dataclasses.asdict(c) for c in cards]},
+            ensure_ascii=False, indent=2,
+        ))
+        return
     render_event(event)
-    for persona in _personas(args.persona):
-        render_card(refract(event, persona))
+    for card in cards:
+        render_card(card)
 
 
 def _cmd_eval(args: argparse.Namespace) -> None:
@@ -66,7 +79,8 @@ def main(argv: list[str] | None = None) -> None:
     sub = ap.add_subparsers(dest="cmd", required=True)
     b = sub.add_parser("brief", help="把一条新闻按你的 persona 折射")
     b.add_argument("target", help="URL 或 fixture:NAME（如 fixture:hormuz）")
-    b.add_argument("--persona", help="persona slug（默认：跑全部内置 persona 做对照）")
+    b.add_argument("--persona", help="persona slug 或你自己的资料文件路径（默认：跑全部内置 persona 做对照）")
+    b.add_argument("--json", action="store_true", help="输出机器可读 JSON（skill/编排器用，engine: cli）")
     b.set_defaults(func=_cmd_brief)
 
     e = sub.add_parser("eval", help="跑预登记反事实 eval（三臂对比 + trace + SKIP 纪律）")
