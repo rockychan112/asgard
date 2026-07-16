@@ -1,0 +1,115 @@
+# Asgard — pre-registered counterfactual eval grid.
+#
+# Committed BEFORE any model is run, so oracles cannot be cherry-picked post-hoc.
+# Method + the pre-registered pass bar: see eval/README.md.
+#
+# Design: personas keep ORTHOGONAL single-exposure facts (P-market / P-logistics /
+# P-fx / P-fuel / P-import), so each news hits a SOLE-CARRIER fact — removing it
+# cleanly drops exactly one consequence. Arms are non-deterministic at temp=0, so
+# the harness takes a K-sample majority and scores only K-unanimous cells. Everything
+# is measured by stake PRESENCE (robust to paraphrase), not text-sameness.
+#
+# Pass bar (pre-registered): Asgard must beat `longprompt` on BOTH counterfactual
+# specificity AND trace-validity. A tie on either → Plan B.
+
+version: 3
+
+news: [hormuz, tariff, fx, ai-render, airesearch, graham]
+
+expect:
+  travel-lead:       {hormuz: fire, tariff: skip, fx: skip, ai-render: skip, airesearch: fire, graham: skip}
+  ecommerce-seller:  {hormuz: fire, tariff: fire, fx: fire, ai-render: skip, airesearch: skip, graham: skip}
+  interior-designer: {hormuz: fire, tariff: fire, fx: fire, ai-render: fire, airesearch: skip, graham: skip}
+  cafe-owner:        {hormuz: fire, tariff: skip, fx: fire, ai-render: skip, airesearch: skip, graham: skip}
+
+# Each counterfactual changes ONE sole-carrier P-id and pre-registers:
+#   targeted   — relevance must drop AND the named stake must vanish.
+#   collateral — a DIFFERENT single-fact change on the SAME news must NOT move it.
+counterfactuals:
+  - id: T-fuel
+    persona: travel-lead
+    news: hormuz
+    targeted:
+      change: {P-fuel: "平台主做本地生活与内容业务，营收与机票、航空燃油成本无关"}
+      drop_relevance: true
+      vanish_stake: "油价经航空燃油成本推高机票、压制出行需求、冲击平台机票业务的利害"
+    collateral:
+      change: {P-goal: "把重心放在提升数据报表的自动化程度"}
+      stable: true
+
+  - id: E-market
+    persona: ecommerce-seller
+    news: tariff
+    targeted:
+      change: {P-market: "只做中国国内市场，不做跨境出口"}
+      drop_relevance: true
+      vanish_stake: "美国对进口家具加征关税抬高其销美到岸成本、需评估调价或申请豁免的利害"
+    collateral:
+      change: {P-cares: "平台政策"}
+      stable: true
+
+  - id: E-logistics
+    persona: ecommerce-seller
+    news: hormuz
+    targeted:
+      change: {P-logistics: "货物在美国本土仓发货，不涉国际海运"}
+      drop_relevance: true
+      vanish_stake: "油价推高国际海运费、抬高其跨境履约成本的利害"
+    collateral:
+      change: {P-fx: "成本与收入均以美元结算，无显著汇率敞口"}
+      stable: true
+
+  - id: E-fx
+    persona: ecommerce-seller
+    news: fx
+    targeted:
+      change: {P-fx: "成本与收入均以美元结算，无汇率敞口"}
+      drop_relevance: true
+      vanish_stake: "美元汇率变动影响其以人民币计的利润率的利害"
+    collateral:
+      change: {P-logistics: "货物在美国本土仓发货，不涉国际海运"}
+      stable: true
+
+  - id: I-import
+    persona: interior-designer
+    news: tariff
+    targeted:
+      change: {P-import: "项目只用国内可得家具与板材，不涉进口，成本不受进口关税影响"}
+      drop_relevance: true
+      vanish_stake: "进口关税推高进口家具/板材采购成本、压缩项目利润或抬高客户报价的利害"
+    collateral:
+      change: {P-cares: "材料与家具审美趋势"}
+      stable: true
+
+  - id: I-logistics
+    persona: interior-designer
+    news: hormuz
+    targeted:
+      change: {P-logistics: "项目家具本地采购、不涉国际海运"}
+      drop_relevance: true
+      vanish_stake: "油价推高进口家具国际海运费、抬高到货成本或延长工期的利害"
+    collateral:
+      change: {P-goal: "提升赢单率与客单价"}
+      stable: true
+
+  - id: C-logistics
+    persona: cafe-owner
+    news: hormuz
+    targeted:
+      change: {P-logistics: "只从本地烘焙商采购熟豆，不涉国际海运"}
+      drop_relevance: true
+      vanish_stake: "油价推高进口生豆国际海运费、抬高其采购成本的利害"
+    collateral:
+      change: {P-cares: "门店获客与复购"}
+      stable: true
+
+  - id: C-fx
+    persona: cafe-owner
+    news: fx
+    targeted:
+      change: {P-fx: "以人民币向本地供应商采购，无汇率敞口"}
+      drop_relevance: true
+      vanish_stake: "美元走强抬高其以美元结算的进口生豆采购成本的利害"
+    collateral:
+      change: {P-logistics: "生豆由本地贸易商配送，不涉国际海运"}
+      stable: true

@@ -1,0 +1,23 @@
+[project]
+name = "asgard"
+version = "0.0.1"
+description = "Your private intelligence officer. It refracts the same news into the stakes and actions that are yours alone."
+requires-python = ">=3.11"
+dependencies = [
+    "openai>=1.40",
+    "pyyaml>=6.0",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+fetch = ["readability-lxml>=0.8", "lxml>=5.0"]
+
+[project.scripts]
+asgard = "asgard.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["asgard"]

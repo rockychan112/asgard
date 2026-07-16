@@ -1,0 +1,83 @@
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+from .analyzer import extract_event, refract
+from .persona import Persona
+from .render import render_card, render_event
+from .sources import load
+
+PERSONA_DIR = Path(__file__).resolve().parent.parent / "personas"
+
+
+def _personas(slug: str | None) -> list[Persona]:
+    if slug:
+        path = PERSONA_DIR / f"{slug}.yaml"
+        if not path.exists():
+            sys.exit(f"未知 persona：{slug}（{PERSONA_DIR} 下没有 {slug}.yaml）")
+        return [Persona.load(path)]
+    return [Persona.load(p) for p in sorted(PERSONA_DIR.glob("*.yaml"))]
+
+
+def _cmd_brief(args: argparse.Namespace) -> None:
+    article = load(args.target)
+    event = extract_event(article)
+    render_event(event)
+    for persona in _personas(args.persona):
+        render_card(refract(event, persona))
+
+
+def _cmd_eval(args: argparse.Namespace) -> None:
+    from .eval import mock_chat, render, run_eval
+    from .judge import LLMJudge, StubJudge
+    from .llm import openai_chat
+
+    if args.dry_run:
+        chat, judge, mode = mock_chat, StubJudge(), "dry-run"
+    else:
+        # arms run at temperature=0 so any output change traces to the fact change,
+        # not sampling. Judge is a different-source non-Claude model (GLM_* env),
+        # kept blind to which arm it scores.
+        chat = openai_chat(temperature=0, json=True)  # arms: OPENAI_*/REFRACTION_MODEL
+        judge = LLMJudge(
+            openai_chat(
+                temperature=0, json=True,
+                base_url_env="GLM_BASE_URL", key_env="GLM_API_KEY",
+                model_env="GLM_MODEL", default_model="glm-4",
+            )
+        )
+        mode = "arms=DeepSeek · judge=GLM"
+
+    k = 1 if args.dry_run else args.k  # mock is deterministic; real arms need K-sample majority
+    report = render(run_eval(chat, judge, mode=mode, k=k))
+    print(report)
+    if args.report:
+        Path(args.report).write_text(report + "\n", encoding="utf-8")
+        print(f"\n[写入 {args.report}]", file=sys.stderr)
+
+
+def main(argv: list[str] | None = None) -> None:
+    ap = argparse.ArgumentParser(
+        prog="asgard",
+        description="你的私人情报官：洞察每一条资讯背后，只对『你』成立的利害关系与行动指引。",
+    )
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    b = sub.add_parser("brief", help="把一条新闻按你的 persona 折射")
+    b.add_argument("target", help="URL 或 fixture:NAME（如 fixture:hormuz）")
+    b.add_argument("--persona", help="persona slug（默认：跑全部内置 persona 做对照）")
+    b.set_defaults(func=_cmd_brief)
+
+    e = sub.add_parser("eval", help="跑预登记反事实 eval（三臂对比 + trace + SKIP 纪律）")
+    e.add_argument("--dry-run", action="store_true", help="用 mock 模型离线验证管线，不花模型调用")
+    e.add_argument("--k", type=int, default=3, help="每个模型臂格采样次数，取多数去 temp=0 抖动（默认 3）")
+    e.add_argument("--report", help="把报告写到该路径（如 eval/report.md）")
+    e.set_defaults(func=_cmd_eval)
+
+    args = ap.parse_args(argv)
+    args.func(args)
+
+
+if __name__ == "__main__":
+    main()
