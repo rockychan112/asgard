@@ -2,7 +2,7 @@
 
 # Asgard —— 你的私人「情报」官
 
-**同一条新闻，只告诉你跟你有关的部分；无关，就直说无关。**
+**每条资讯，只解读与「你」有关的利害关系和行动指引。**
 
 <a href="https://rockychan112.github.io/asgard/"><b>在线 Demo</b></a> · <a href="./README.en.md">English</a>
 

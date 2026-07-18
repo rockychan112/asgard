@@ -2,7 +2,7 @@
 
 # Asgard — your private intelligence officer
 
-**One news item, cut to the part that concerns you — and when none of it does, it says so.**
+**Every news item, interpreted only for the stakes and actions that concern you.**
 
 <a href="https://rockychan112.github.io/asgard/"><b>Live demo</b></a> · <a href="./README.md">简体中文</a>
 
