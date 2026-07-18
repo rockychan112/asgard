@@ -162,28 +162,13 @@
     background: linear-gradient(180deg, var(--panel), var(--panel-2));
     border: 1px solid var(--line); border-radius: 14px; padding: 1.25rem 1.35rem 1.35rem;
   }
-  .shead { display: flex; align-items: baseline; gap: .7rem; }
-  .snum {
-    font-family: var(--mono); font-size: .74rem; font-weight: 600; color: var(--indigo);
-    border: 1px solid color-mix(in srgb, var(--indigo) 55%, transparent); border-radius: 999px;
-    width: 1.5rem; height: 1.5rem; display: inline-flex; align-items: center; justify-content: center;
-    align-self: center; flex: none;
-  }
-  .stitle { font-weight: 600; font-size: .9rem; color: var(--fg); }
-  .snote { font-size: .74rem; color: var(--faint); margin-left: auto; text-align: right; }
-  .step textarea {
-    margin-top: .85rem; width: 100%; min-height: 10.5rem; resize: vertical;
-    background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 10px;
-    padding: .8rem .9rem; font-family: var(--mono); font-size: .74rem; line-height: 1.7;
-  }
-  .step textarea:focus { outline: none; border-color: var(--indigo); }
   .cmd {
-    margin: .85rem 0 0; overflow-x: auto;
+    margin: 0; overflow-x: auto;
     background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
     padding: .8rem .9rem; font-family: var(--mono); font-size: .72rem; line-height: 1.8; color: var(--fg);
     white-space: pre;
   }
-  .cmd .c { color: var(--faint); }
+  .cmd.say { white-space: pre-wrap; word-break: break-word; font-size: .8rem; color: var(--muted); }
   .btnrow { display: flex; gap: .6rem; margin-top: .8rem; flex-wrap: wrap; }
   .btn {
     font-family: var(--mono); font-size: .72rem; letter-spacing: .04em;
@@ -281,43 +266,16 @@
   </div>
 
   <section class="tryit">
-    <div class="tag">换成你 · 30 秒本机真跑</div>
-    <h2>写几行你自己的资料，拿到真的</h2>
-    <p class="sub">上面是回放；真折射在你自己的机器上跑，用你自己的模型端点——资料和 key 不经过任何人。</p>
+    <div class="tag">换成你 · 交给你的 agent</div>
+    <h2>复制一句话，让你的 agent 装好它</h2>
+    <p class="sub">把下面这句发给 Claude Code / Codex / Cursor 任意 agent：它会引导你写好资料、配好模型端点，当场跑出第一份真简报——全程在你自己的机器上。</p>
     <div class="steps">
       <div class="step">
-        <div class="shead"><span class="snum">1</span><span class="stitle">写你的资料，下载成文件</span><span class="snote">只在浏览器里，不上传</span></div>
-        <textarea id="yamlbox" spellcheck="false">label: 你是谁（一句话身份）
-facts:
-  P-role: 你的职业，日常在做什么
-  P-industry: 所在行业 / 生意靠什么赚钱
-  P-goal: 今年最想推进的一两件事
-  P-cares: 想盯的题材（逗号分隔）
-  P-ignores: 明确不想看的题材</textarea>
-        <div class="btnrow">
-          <button class="btn" id="dlBtn" type="button">下载 profile.yaml</button>
-        </div>
-      </div>
-      <div class="step">
-        <div class="shead"><span class="snum">2</span><span class="stitle">装上 Asgard</span></div>
-        <pre class="cmd">git clone https://github.com/rockychan112/asgard && cd asgard
-uv venv && uv pip install -e .</pre>
-        <div class="btnrow"><button class="btn cpy" type="button">复制</button></div>
-      </div>
-      <div class="step">
-        <div class="shead"><span class="snum">3</span><span class="stitle">填你的模型端点</span><span class="snote">DeepSeek / 本地 Ollama / OpenAI 都行</span></div>
-        <pre class="cmd">export OPENAI_BASE_URL=…
-export OPENAI_API_KEY=…
-export ASGARD_MODEL=…</pre>
-        <div class="btnrow"><button class="btn cpy" type="button">复制</button></div>
-      </div>
-      <div class="step">
-        <div class="shead"><span class="snum">4</span><span class="stitle">喂它一条新闻</span><span class="snote">每条判断都标注引用了你哪行资料</span></div>
-        <pre class="cmd">asgard brief fixture:ratecut --persona ~/Downloads/profile.yaml</pre>
+        <pre class="cmd say">克隆 https://github.com/rockychan112/asgard 并进入目录，按仓库 AGENTS.md 的引导带我完成 Asgard 首次配置，跑出第一份简报。</pre>
         <div class="btnrow"><button class="btn cpy" type="button">复制</button></div>
       </div>
     </div>
-    <div class="alt">在用 Claude Code / Codex / Cursor？可以不装命令行——<code>npx skills add https://github.com/rockychan112/asgard</code>，然后对 agent 说「asgard 今日简报」。</div>
+    <div class="alt">不用 agent？手动上手四步见 <a href="https://github.com/rockychan112/asgard#上手">README</a>　·　日常每天自动收一份：<code>npx skills add https://github.com/rockychan112/asgard</code></div>
   </section>
 
   <footer>
@@ -2115,15 +2073,6 @@ export ASGARD_MODEL=…</pre>
     var next = cur;
     while (next === cur) next = Math.floor(Math.random() * POOL.length);
     render(next);
-  });
-
-  document.getElementById("dlBtn").addEventListener("click", function () {
-    var blob = new Blob([document.getElementById("yamlbox").value], { type: "text/yaml" });
-    var a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "profile.yaml";
-    a.click();
-    URL.revokeObjectURL(a.href);
   });
 
   document.querySelectorAll(".cpy").forEach(function (b) {
