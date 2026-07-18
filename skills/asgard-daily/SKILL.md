@@ -19,9 +19,11 @@ If the profile is missing: offer to create it from `examples/profile.sample.yaml
 
 ## Engines (report which one you used)
 
-1. **`engine: cli`** — preferred. If the `asgard` CLI is installed, run per item:
+1. **`engine: cli`** — preferred. If the `asgard` CLI is installed and a feeds file exists, the whole run is one command:
+   `asgard daily --profile <profile-path> --feeds <feeds-path>`
+   (fetches, dedupes, refracts, and writes the brief itself — just report its output path and counts). For hand-picked URLs, run per item:
    `asgard brief <url> --persona <profile-path> --json`
-   and assemble the brief from its JSON. This path is structurally validated by the Asgard codebase and covered by the repo's eval.
+   and assemble the brief from its JSON. Either way this path is structurally validated by the Asgard codebase and covered by the repo's eval.
 2. **`engine: llm`** — fallback. No CLI: you apply the protocol below yourself. Mark the brief's front matter `engine: llm`. This path depends on your own discipline; it is NOT covered by the repo's eval. Do not claim otherwise.
 
 ## Protocol (rules, not suggestions)
@@ -83,6 +85,6 @@ That empty brief is the product working, not failing.
 ## Scheduling (three tiers — be honest about which applies)
 
 - **T1 — host has a scheduler** (e.g. Claude Code): create a daily job, e.g. "every day at 08:00 run the asgard-daily skill". Recommended.
-- **T2 — system cron/launchd**: give the user a copy-paste line calling their agent headless, e.g.
+- **T2 — system cron/launchd**: with the CLI installed, schedule `asgard daily` directly (no agent needed) — copy-paste lines in [docs/cron.md](../../docs/cron.md); or call an agent headless, e.g.
   `0 8 * * * cd <workspace> && <agent-cli> -p "run the asgard-daily skill for today"`.
 - **T3 — no scheduler**: the user says "asgard 今日简报" whenever they want one. Still fully functional, just not automatic — say so plainly, never pretend a schedule was installed when it wasn't.

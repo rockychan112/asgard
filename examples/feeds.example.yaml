@@ -5,8 +5,8 @@
 feeds:
   - name: Hacker News
     url: https://news.ycombinator.com/rss
-  - name: Reuters 商业
-    url: https://feeds.reuters.com/reuters/businessNews
+  - name: BBC Business
+    url: https://feeds.bbci.co.uk/news/business/rss.xml
   - name: 少数派
     url: https://sspai.com/feed
 

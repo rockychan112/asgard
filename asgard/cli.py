@@ -42,6 +42,12 @@ def _cmd_brief(args: argparse.Namespace) -> None:
         render_card(card)
 
 
+def _cmd_daily(args: argparse.Namespace) -> None:
+    from .daily import run
+
+    sys.exit(run(args.profile, args.feeds, args.out, max_items=args.max_items))
+
+
 def _cmd_eval(args: argparse.Namespace) -> None:
     from .eval import mock_chat, render, run_eval
     from .judge import LLMJudge, StubJudge
@@ -82,6 +88,13 @@ def main(argv: list[str] | None = None) -> None:
     b.add_argument("--persona", help="persona slug 或你自己的资料文件路径（默认：跑全部内置 persona 做对照）")
     b.add_argument("--json", action="store_true", help="输出机器可读 JSON（skill/编排器用，engine: cli）")
     b.set_defaults(func=_cmd_brief)
+
+    d = sub.add_parser("daily", help="按你的信源列表拉当日新闻，逐条折射，落一份日报到 briefs/")
+    d.add_argument("--profile", help="你的资料文件（默认依次找 ./asgard/profile.yaml、~/.asgard/profile.yaml）")
+    d.add_argument("--feeds", help="信源列表（默认同上顺序找 feeds.yaml，样例见 examples/feeds.example.yaml）")
+    d.add_argument("--out", help="日报输出路径（默认 ./briefs/YYYY-MM-DD.md，没有 ./briefs 时写 ~/.asgard/briefs/）")
+    d.add_argument("--max-items", type=int, help="覆盖 feeds.yaml 里的 max_items_per_day")
+    d.set_defaults(func=_cmd_daily)
 
     e = sub.add_parser("eval", help="跑预登记反事实 eval（三臂对比 + trace + SKIP 纪律）")
     e.add_argument("--dry-run", action="store_true", help="用 mock 模型离线验证管线，不花模型调用")

@@ -45,6 +45,8 @@ Two things up front:
 - With the `asgard` CLI installed, the skill calls it (citation checks enforced in code); without it, your agent runs the protocol itself and the brief is honestly tagged `engine: llm` — the repo's eval only vouches for the CLI path.
 - On a day when nothing concerns you, the brief still arrives: "Nothing worth your time today, checked N items." That's the product working, not failing.
 
+Rather not go through an agent? `asgard daily` does the same thing in one command (fetch feeds → refract each item → write the brief); add your OS scheduler and it's fully local: see [docs/cron.md](docs/cron.md).
+
 ## Quickstart
 
 ```bash
@@ -64,6 +66,9 @@ asgard brief fixture:hormuz
 # one person only, or feed it a news URL
 asgard brief fixture:hormuz --persona travel-lead
 asgard brief https://example.com/some-news
+
+# a full daily brief: fetch your feeds, refract each item, write briefs/YYYY-MM-DD.md
+asgard daily --profile examples/profile.sample.yaml --feeds examples/feeds.example.yaml
 ```
 
 ## Make the profile yours
@@ -108,7 +113,7 @@ That's exactly what the exam watches. The skip cards in the demo are real output
 
 **How usable is it today?**
 
-`brief` (refract one news item), `eval` (run the exam), and the daily-brief skill (above) work. Building the profile is hand-edited for now — interactive setup and long-term memory aren't built yet.
+`brief` (refract one news item), `daily` (a full brief from your feed list, cron-schedulable), `eval` (run the exam), and the daily-brief skill (above) work. Building the profile is hand-edited for now — interactive setup and long-term memory aren't built yet.
 
 ## License
 
