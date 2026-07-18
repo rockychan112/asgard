@@ -57,17 +57,16 @@
   }
   .tagline .q { color: var(--teal); }
   .lead {
-    color: var(--muted); font-size: 1.02rem; line-height: 1.75;
-    max-width: 33rem; margin: 1.5rem auto 0; text-wrap: balance;
+    color: var(--muted); font-size: 1.14rem; line-height: 1.75;
+    max-width: 34rem; margin: 1.5rem auto 0; text-wrap: balance;
   }
-  .lead b { color: var(--fg); font-weight: 600; }
 
   /* ---- the light apparatus: source -> prism -> cards ---- */
   .apparatus { margin-top: 4.5rem; }
 
   .source { max-width: 34rem; margin: 0 auto; text-align: center; }
   .source .tag { font-family: var(--mono); font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); }
-  .source .head { font-family: var(--display); font-weight: 600; font-size: 1.06rem; color: var(--white); margin: .7rem 0 .5rem; letter-spacing: -.01em; }
+  .source .head { font-family: var(--display); font-weight: 600; font-size: 1.15rem; color: var(--white); margin: .7rem 0 .5rem; letter-spacing: -.01em; }
   .source .src { font-family: var(--mono); font-size: .68rem; color: var(--faint); }
   .shuffle {
     margin-top: .95rem; font-family: var(--mono); font-size: .72rem; letter-spacing: .08em;
@@ -94,7 +93,7 @@
     background: var(--hue); box-shadow: 0 0 16px var(--hue); opacity: .9;
   }
   .card:hover { transform: translateY(-3px); box-shadow: 0 20px 44px -22px var(--hue), 0 0 0 1px color-mix(in srgb, var(--hue) 40%, transparent); }
-  .who { font-weight: 600; font-size: .9rem; line-height: 1.4; letter-spacing: -.01em; min-height: 2.52em; display: flex; align-items: flex-start; }
+  .who { font-weight: 600; font-size: 1rem; line-height: 1.4; letter-spacing: -.01em; min-height: 2.52em; display: flex; align-items: flex-start; }
   .badge {
     align-self: flex-start; margin-top: .9rem; font-family: var(--mono); font-size: .64rem;
     letter-spacing: .1em; text-transform: uppercase; padding: .2rem .55rem; border-radius: 999px;
@@ -107,10 +106,10 @@
     border: 1px dashed var(--line); background: var(--bg);
   }
   .replay b { color: var(--hue); font-weight: 600; }
-  .stake { font-size: .84rem; line-height: 1.72; color: var(--muted); margin: 1.15rem 0 0; }
+  .stake { font-size: .95rem; line-height: 1.72; color: var(--muted); margin: 1.15rem 0 0; }
   .do { font-family: var(--mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--faint); margin-top: 1.35rem; }
   .card ul { list-style: none; margin: .6rem 0 0; padding: 0; display: grid; gap: .6rem; }
-  .card li { font-size: .82rem; line-height: 1.6; color: var(--fg); padding-left: 1.15rem; position: relative; }
+  .card li { font-size: .93rem; line-height: 1.65; color: var(--fg); padding-left: 1.15rem; position: relative; }
   .card li::before { content: "→"; position: absolute; left: 0; top: 0; color: var(--hue); font-family: var(--mono); }
   .cite { margin-top: auto; padding-top: 1.4rem; display: flex; flex-wrap: wrap; gap: .4rem; }
   .chip { font-family: var(--mono); font-size: .63rem; color: var(--fg); padding: .16rem .48rem; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); }
@@ -135,7 +134,7 @@
   .facts { display: none; margin-top: .7rem; }
   .card.open .facts { display: grid; gap: .35rem; }
   .frow {
-    font-size: .72rem; line-height: 1.55; color: var(--faint);
+    font-size: .8rem; line-height: 1.55; color: var(--faint);
     padding: .35rem .55rem .45rem; border-radius: 7px; border: 1px solid transparent;
   }
   .frow .fhead { display: flex; align-items: baseline; gap: .45rem; }
@@ -147,7 +146,7 @@
   .frow.off { color: var(--faint); border-color: var(--line); cursor: pointer; }
   .frow.off .ftext, .frow.off .fid { text-decoration: line-through; opacity: .55; }
   .frow .mini { margin-left: auto; font-family: var(--mono); font-size: .58rem; color: var(--faint); white-space: nowrap; }
-  .factnote { font-size: .68rem; line-height: 1.6; color: var(--faint); margin-top: .55rem; }
+  .factnote { font-size: .76rem; line-height: 1.6; color: var(--faint); margin-top: .55rem; }
 
   /* ---- try it for real ---- */
   .tryit { margin-top: 5.5rem; }
@@ -156,7 +155,7 @@
     text-align: center; font-family: var(--display); font-weight: 650; letter-spacing: -.01em;
     font-size: clamp(1.35rem, 3.4vw, 1.8rem); color: var(--white); margin: .7rem 0 0;
   }
-  .tryit .sub { text-align: center; color: var(--muted); font-size: .92rem; max-width: 36rem; margin: .9rem auto 0; text-wrap: balance; }
+  .tryit .sub { text-align: center; color: var(--muted); font-size: 1.02rem; max-width: 36rem; margin: .9rem auto 0; text-wrap: balance; }
   .steps { max-width: 620px; margin: 2.2rem auto 0; display: grid; gap: 1rem; }
   .step {
     background: linear-gradient(180deg, var(--panel), var(--panel-2));
@@ -168,7 +167,7 @@
     padding: .8rem .9rem; font-family: var(--mono); font-size: .72rem; line-height: 1.8; color: var(--fg);
     white-space: pre;
   }
-  .cmd.say { white-space: pre-wrap; word-break: break-word; font-size: .8rem; color: var(--muted); }
+  .cmd.say { white-space: pre-wrap; word-break: break-word; font-size: .9rem; color: var(--muted); }
   .btnrow { display: flex; gap: .6rem; margin-top: .8rem; flex-wrap: wrap; }
   .btn {
     font-family: var(--mono); font-size: .72rem; letter-spacing: .04em;
@@ -176,7 +175,7 @@
     padding: .42rem 1.05rem; cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease;
   }
   .btn:hover { border-color: var(--teal); box-shadow: 0 0 14px rgba(67,198,184,.22); }
-  .alt { font-size: .76rem; color: var(--faint); margin-top: 1.3rem; line-height: 1.7; text-align: center; max-width: 620px; margin-left: auto; margin-right: auto; }
+  .alt { font-size: .84rem; color: var(--faint); margin-top: 1.3rem; line-height: 1.7; text-align: center; max-width: 620px; margin-left: auto; margin-right: auto; }
   .alt code { font-family: var(--mono); font-size: .7rem; color: var(--muted); }
   .alt a { color: var(--muted); }
 
@@ -213,7 +212,7 @@
   <div class="brand">
     <h1 class="name">Asgard<span class="dot">.</span></h1>
     <p class="tagline">你的私人<span class="q">「情报」</span>官</p>
-    <p class="lead">同一条资讯，只告诉<b>「你」</b>跟你有关的<b>利害</b>和<b>能做的事</b>；无关，就直说无关。</p>
+    <p class="lead">每条资讯，只解读与「你」有关的利害关系和行动指引。</p>
   </div>
 
   <div class="apparatus">
