@@ -1,0 +1,17 @@
+# 复制到 ~/.asgard/config.yaml —— Asgard 的唯一配置文件。
+# 这里不放任何密钥：模型端点走环境变量（OPENAI_BASE_URL / OPENAI_API_KEY /
+# ASGARD_MODEL），建议放 ~/.asgard/env（chmod 600），定时任务里 source 它。
+# 改完跑 `asgard doctor`，全绿才算配置完成。
+
+# 资料和信源不写时按默认位置找（./.asgard/ → ~/.asgard/）
+# profile: ~/.asgard/profile.yaml
+# feeds: ~/.asgard/feeds.yaml
+
+output:
+  formats: [md, html]      # 日报格式：md / html，留一个或都要
+  dir: ~/.asgard/briefs    # 日报落盘目录
+
+schedule:                  # 声明何时跑；`asgard schedule print` 会据此生成
+  cadence: daily           # daily | weekly     crontab/launchd 片段，复制安装
+  time: "08:00"
+  weekday: mon             # weekly 时生效

@@ -48,12 +48,25 @@ Done means: the output cites `P-id` lines from THEIR profile (or is an honest
 skip with a reason). If it errors, fix and retry. Never declare setup complete
 without a successful real run — "should work" is not done.
 
-## 5. Offer daily use (optional, after 4 succeeds)
+## 5. Set up the daily brief (the actual product — do offer this)
 
-- Feeds: copy `examples/feeds.example.yaml` → `~/.asgard/feeds.yaml`, adjust
-  sources, then `asgard daily` writes `briefs/YYYY-MM-DD.md`.
-- Scheduling: `skills/asgard-daily/SKILL.md` (agent skill, tiers T1/T2/T3) or
-  `docs/cron.md` (plain cron/launchd). Recommend, don't auto-install.
+The single verification run above proves the pipeline; a daily brief landing
+on schedule is what the user keeps. Ask if they want it (most do), then:
+
+1. **Feeds**: copy `examples/feeds.example.yaml` → `~/.asgard/feeds.yaml`,
+   adjust the sources with the user (3–8 feeds is the sweet spot).
+2. **Config**: write `~/.asgard/config.yaml` from `examples/config.sample.yaml`.
+   Ask exactly two things: output format (`md` / `html` / both) and when to
+   run (daily HH:MM, or weekly + weekday).
+3. **Health check**: run `asgard doctor --json` and fix until every check is
+   green. The green doctor — not your own judgement — is the completion bar.
+4. **First daily run**: `asgard daily`; show the user the file(s) it wrote
+   (`briefs/YYYY-MM-DD.md` / `.html`). An all-skip day still writes the file —
+   that is the product working.
+5. **Scheduling**: run `asgard schedule print` and hand the user the generated
+   crontab/launchd snippet — or, if this host has its own scheduler, offer to
+   create the job there. Never install any scheduled task without the user's
+   explicit consent in this conversation.
 
 ## Boundaries
 

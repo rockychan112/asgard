@@ -45,7 +45,21 @@ def _cmd_brief(args: argparse.Namespace) -> None:
 def _cmd_daily(args: argparse.Namespace) -> None:
     from .daily import run
 
-    sys.exit(run(args.profile, args.feeds, args.out, max_items=args.max_items))
+    formats = [f.strip().lower() for f in args.format.split(",")] if args.format else None
+    sys.exit(run(args.profile, args.feeds, args.out, max_items=args.max_items,
+                 config=args.config, formats=formats))
+
+
+def _cmd_doctor(args: argparse.Namespace) -> None:
+    from .doctor import run_doctor
+
+    sys.exit(run_doctor(args.config, ping=args.ping, as_json=args.json))
+
+
+def _cmd_schedule(args: argparse.Namespace) -> None:
+    from .schedule import print_schedule
+
+    sys.exit(print_schedule(args.config))
 
 
 def _cmd_eval(args: argparse.Namespace) -> None:
@@ -94,7 +108,21 @@ def main(argv: list[str] | None = None) -> None:
     d.add_argument("--feeds", help="信源列表（默认同上顺序找 feeds.yaml，样例见 examples/feeds.example.yaml）")
     d.add_argument("--out", help="日报输出路径（默认 ./briefs/YYYY-MM-DD.md，没有 ./briefs 时写 ~/.asgard/briefs/）")
     d.add_argument("--max-items", type=int, help="覆盖 feeds.yaml 里的 max_items_per_day")
+    d.add_argument("--config", help="配置文件（默认依次找 ./.asgard/config.yaml、~/.asgard/config.yaml）")
+    d.add_argument("--format", help="覆盖输出格式，逗号分隔：md,html（默认按 config，没有 config 时只出 md）")
     d.set_defaults(func=_cmd_daily)
+
+    doc = sub.add_parser("doctor", help="体检：config/资料/信源/env/输出目录，全绿才算配置完成")
+    doc.add_argument("--config", help="配置文件路径（默认同 daily）")
+    doc.add_argument("--json", action="store_true", help="机器可读输出（agent 用）")
+    doc.add_argument("--ping", action="store_true", help="额外真调一次模型端点验证连通（花一次极小调用）")
+    doc.set_defaults(func=_cmd_doctor)
+
+    sc = sub.add_parser("schedule", help="定时：按 config 的 schedule 声明生成系统定时片段")
+    scs = sc.add_subparsers(dest="action", required=True)
+    sp = scs.add_parser("print", help="打印 crontab 行 + launchd plist，复制安装（不自动装）")
+    sp.add_argument("--config", help="配置文件路径（默认同 daily）")
+    sp.set_defaults(func=_cmd_schedule)
 
     e = sub.add_parser("eval", help="跑预登记反事实 eval（三臂对比 + trace + SKIP 纪律）")
     e.add_argument("--dry-run", action="store_true", help="用 mock 模型离线验证管线，不花模型调用")

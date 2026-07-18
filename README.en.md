@@ -69,6 +69,10 @@ asgard brief https://example.com/some-news
 
 # a full daily brief: fetch your feeds, refract each item, write briefs/YYYY-MM-DD.md
 asgard daily --profile examples/profile.sample.yaml --feeds examples/feeds.example.yaml
+
+# get one every day: write a config (md/html + when to run, see examples/config.sample.yaml)
+asgard doctor           # all checks green = configured
+asgard schedule print   # emits crontab / launchd snippets to copy-paste
 ```
 
 ## Make the profile yours
@@ -113,7 +117,7 @@ That's exactly what the exam watches. The skip cards in the demo are real output
 
 **How usable is it today?**
 
-`brief` (refract one news item), `daily` (a full brief from your feed list, cron-schedulable), `eval` (run the exam), and the daily-brief skill (above) work. Building the profile is hand-edited for now — interactive setup and long-term memory aren't built yet.
+`brief` (refract one news item), `daily` (a full brief from your feed list — md/html, cron-schedulable), `doctor` (config health check), `eval` (run the exam), and the daily-brief skill (above) work. IM delivery and long-term memory aren't built yet.
 
 ## License
 

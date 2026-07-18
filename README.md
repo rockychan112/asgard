@@ -69,6 +69,10 @@ asgard brief https://example.com/some-news
 
 # 整份日报：按信源列表拉当日新闻，逐条折射，落到 briefs/
 asgard daily --profile examples/profile.sample.yaml --feeds examples/feeds.example.yaml
+
+# 每天自动收：写一份 config（格式 md/html + 几点跑，样例 examples/config.sample.yaml）
+asgard doctor           # 体检到全绿 = 配置完成
+asgard schedule print   # 生成 crontab / launchd 片段，复制安装
 ```
 
 ## 换成你自己的资料
@@ -113,7 +117,7 @@ facts:
 
 **现在能用到什么程度？**
 
-`brief`（折射单条新闻）、`daily`（按信源列表出整份日报，可配 cron 定时）、`eval`（跑考卷）、skill 每日简报（见上）能用；建资料暂时要手动编辑文件，交互式引导和长期记忆还没做。
+`brief`（折射单条新闻）、`daily`（按信源列表出整份日报，md/html 可选、可配 cron 定时）、`doctor`（配置体检）、`eval`（跑考卷）、skill 每日简报（见上）能用；推送到 IM 和长期记忆还没做。
 
 ## License
 

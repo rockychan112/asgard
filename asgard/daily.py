@@ -15,19 +15,19 @@ from datetime import date
 from pathlib import Path
 
 from .analyzer import Event, Refraction, extract_event, refract
+from .config import SEARCH_BASES, Config
 from .feeds import FeedConfig, Item, collect
 from .persona import Persona
+from .render_html import render_brief_html
 from .sources import Article, from_url
-
-# Same first-match-wins convention as skills/asgard-daily/SKILL.md.
-_SEARCH_BASES = (Path("asgard"), Path.home() / ".asgard")
 
 
 def resolve_config(explicit: str | None, filename: str) -> Path | None:
+    """First match wins: explicit path -> ./.asgard/<name> -> ~/.asgard/<name>."""
     if explicit:
         p = Path(explicit).expanduser()
         return p if p.exists() else None
-    for base in _SEARCH_BASES:
+    for base in SEARCH_BASES:
         p = base / filename
         if p.exists():
             return p
@@ -139,14 +139,20 @@ def render_brief(
 def run(
     profile: str | None, feeds: str | None, out: str | None,
     max_items: int | None = None, workers: int = 4,
+    config: str | None = None, formats: list[str] | None = None,
 ) -> int:
-    profile_path = resolve_config(profile, "profile.yaml")
+    conf = Config.load(config)
+    if conf.source and conf.problems():
+        sys.exit(f"{conf.source} 有问题：\n  - " + "\n  - ".join(conf.problems()))
+    formats = formats or conf.output.formats
+
+    profile_path = resolve_config(profile or conf.profile, "profile.yaml")
     if not profile_path:
         sys.exit(
             "找不到你的资料文件。放一份到 ~/.asgard/profile.yaml（或用 --profile 指定），"
             "样例见 examples/profile.sample.yaml"
         )
-    feeds_path = resolve_config(feeds, "feeds.yaml")
+    feeds_path = resolve_config(feeds or conf.feeds, "feeds.yaml")
     if not feeds_path:
         sys.exit(
             "找不到信源列表。放一份到 ~/.asgard/feeds.yaml（或用 --feeds 指定），"
@@ -170,13 +176,23 @@ def run(
     day = date.today().isoformat()
     if out:
         out_path = Path(out).expanduser()
+    elif conf.output.dir:
+        out_path = Path(conf.output.dir).expanduser() / f"{day}.md"
     else:
         base = Path("briefs") if Path("briefs").is_dir() else Path.home() / ".asgard" / "briefs"
         out_path = base / f"{day}.md"
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(render_brief(day, str(profile_path), results, feed_notes), encoding="utf-8")
+
+    written = []
+    if "md" in formats:
+        out_path.write_text(render_brief(day, str(profile_path), results, feed_notes), encoding="utf-8")
+        written.append(out_path)
+    if "html" in formats:
+        html_path = out_path.with_suffix(".html")
+        html_path.write_text(render_brief_html(day, results, feed_notes, _is_briefed), encoding="utf-8")
+        written.append(html_path)
 
     briefed = sum(1 for r in results if _is_briefed(r))
     ok = sum(1 for r in results if not r.error)
-    print(f"[asgard] 日报已写入 {out_path}（候选 {len(results)} · 入报 {briefed} · 跳过 {ok - briefed}）")
-    return 2 if not ok else 0  # nothing processed at all -> flag for cron, file still written
+    print(f"[asgard] 日报已写入 {' + '.join(map(str, written))}（候选 {len(results)} · 入报 {briefed} · 跳过 {ok - briefed}）")
+    return 2 if not ok else 0  # nothing processed at all -> flag for cron, files still written

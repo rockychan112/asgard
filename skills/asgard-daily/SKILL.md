@@ -11,17 +11,18 @@ This file is a **protocol installer, not a magic prompt**. It carries three enfo
 
 | File | Location (first match wins) | Purpose |
 |---|---|---|
-| Profile | `./asgard/profile.yaml`, else `~/.asgard/profile.yaml` | The user's fact contract: one fact per line, each with a stable `P-id` |
-| Feeds | `./asgard/feeds.yaml`, else `~/.asgard/feeds.yaml` | RSS/Atom or site URLs to read (see `examples/feeds.example.yaml`) |
-| Output | `./briefs/YYYY-MM-DD.md`, else `~/.asgard/briefs/` | One brief per day. Always written, even when everything is skipped |
+| Profile | `./.asgard/profile.yaml`, else `~/.asgard/profile.yaml` | The user's fact contract: one fact per line, each with a stable `P-id` |
+| Feeds | `./.asgard/feeds.yaml`, else `~/.asgard/feeds.yaml` | RSS/Atom or site URLs to read (see `examples/feeds.example.yaml`) |
+| Config | `./.asgard/config.yaml`, else `~/.asgard/config.yaml` | Output formats (md/html), output dir, schedule declaration (see `examples/config.sample.yaml`); `asgard doctor` must be green |
+| Output | `./briefs/YYYY-MM-DD.md`, else `~/.asgard/briefs/` | One brief per day (+ `.html` when configured). Always written, even when everything is skipped |
 
 If the profile is missing: offer to create it from `examples/profile.sample.yaml`, asking the user only for facts they state explicitly. Never invent or infer facts about the user. Never edit an existing profile without showing the diff and getting confirmation.
 
 ## Engines (report which one you used)
 
 1. **`engine: cli`** — preferred. If the `asgard` CLI is installed and a feeds file exists, the whole run is one command:
-   `asgard daily --profile <profile-path> --feeds <feeds-path>`
-   (fetches, dedupes, refracts, and writes the brief itself — just report its output path and counts). For hand-picked URLs, run per item:
+   `asgard daily`
+   (reads config/profile/feeds from their default locations — pass `--profile/--feeds/--config` only to override; fetches, dedupes, refracts, and writes the brief in every configured format — just report its output paths and counts). For hand-picked URLs, run per item:
    `asgard brief <url> --persona <profile-path> --json`
    and assemble the brief from its JSON. Either way this path is structurally validated by the Asgard codebase and covered by the repo's eval.
 2. **`engine: llm`** — fallback. No CLI: you apply the protocol below yourself. Mark the brief's front matter `engine: llm`. This path depends on your own discipline; it is NOT covered by the repo's eval. Do not claim otherwise.

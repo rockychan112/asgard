@@ -3,6 +3,10 @@
 `asgard daily` 加上系统自带的定时器（crontab / launchd），就能每天自动收到一份日报。
 这条路不需要 Claude Code / Codex / Cursor，任何一台能跑 Python 的机器都行。
 
+> 快捷方式：写好 `~/.asgard/config.yaml`（样例 `examples/config.sample.yaml`）后，
+> `asgard schedule print` 会按你声明的周期直接生成下面这两段，复制安装即可。
+> 本文其余部分是手写版说明。
+
 ## 前提
 
 1. 装好命令行：`uv venv && uv pip install -e .`，确认 `asgard daily --help` 能跑
