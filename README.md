@@ -16,7 +16,7 @@
 
 [![同一条新闻折射给四个身份：三条各自的利害与行动，第四条诚实跳过](design/hero.png)](https://rockychan112.github.io/asgard/)
 
-<p align="center"><sub>三张卡各有各的利害和动作，每条都标注依据；第四张，跳过　·　<a href="https://rockychan112.github.io/asgard/">▶ 可交互版：12 条新闻随机换，谁跳过会变</a></sub></p>
+<p align="center"><sub>三张卡各有各的利害和动作，每条都标注依据；第四张，跳过　·　<a href="https://rockychan112.github.io/asgard/">▶ 可交互版：12 条新闻随机换，还能点掉一行资料，看真实引擎怎么重判</a></sub></p>
 
 ## 跟其它工具的差别
 

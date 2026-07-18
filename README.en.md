@@ -16,7 +16,7 @@ Same news, four people, four different results:
 
 [![One news item refracted to four identities: three get their own stakes and actions, the fourth honestly skips](design/hero.png)](https://rockychan112.github.io/asgard/)
 
-<p align="center"><sub>Three cards get their own stakes and moves, every claim shows its source; the fourth — skip　·　<a href="https://rockychan112.github.io/asgard/">▶ interactive: 12 news items to shuffle — who skips changes</a></sub></p>
+<p align="center"><sub>Three cards get their own stakes and moves, every claim shows its source; the fourth — skip　·　<a href="https://rockychan112.github.io/asgard/">▶ interactive: shuffle 12 news items, or knock out a profile line and watch the real engine re-judge</a></sub></p>
 
 ## How it compares
 
