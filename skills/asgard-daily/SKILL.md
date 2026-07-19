@@ -7,6 +7,20 @@ description: Personalized daily news brief with honest SKIPs. Reads the user's p
 
 This file is a **protocol installer, not a magic prompt**. It carries three enforceable rules (fact/interpretation split, cite-or-drop, honest SKIP) plus a fixed output contract. The rules are falsifiable — the repo ships a pre-registered eval (`asgard eval`) whose honest result is public: on personalization precision Asgard **tied** a plain "profile pasted into an assistant" baseline; what it wins reliably is SKIP discipline and auditable citations. Never imply otherwise.
 
+## First run — set up once (do this before anything else)
+
+This skill may have been installed on its own (`npx skills add`), in which case only this file is present — the CLI, the `examples/` templates and the setup guide are not. Both entry points must converge on the same full setup, so **before producing any brief, make sure Asgard is actually installed:**
+
+**Check:** does the `asgard` CLI run (`asgard --help`) **and** does a profile exist (`./.asgard/profile.yaml` or `~/.asgard/profile.yaml`)?
+
+- **Yes →** already set up. Skip to the daily run.
+- **No →** this is a fresh skill-only install. Do NOT improvise a brief from this file alone. Tell the user you'll do a one-time setup first, and once they agree:
+  1. Clone the repo somewhere sensible: `git clone https://github.com/rockychan112/asgard`
+  2. Open the repo's **`AGENTS.md`** and follow it end to end (install CLI → interview the profile → model endpoint via env → **verified real run** → config with language/format/schedule → `asgard doctor` green).
+  3. Only after `asgard doctor` is green, come back here and produce today's brief.
+
+The result is identical whichever way the user arrived — pasting the clone one-liner to an agent, or installing this skill: both end at a working CLI + profile + config, then this daily protocol.
+
 ## Files
 
 | File | Location (first match wins) | Purpose |
