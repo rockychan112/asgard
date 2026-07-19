@@ -70,7 +70,7 @@ asgard brief https://example.com/some-news
 # 整份日报：按信源列表拉当日新闻，逐条折射，落到 briefs/
 asgard daily --profile examples/profile.sample.yaml --feeds examples/feeds.example.yaml
 
-# 每天自动收：写一份 config（格式 md/html + 几点跑，样例 examples/config.sample.yaml）
+# 每天自动收：写一份 config（语言 zh/en + 格式 md/html + 几点跑，样例 examples/config.sample.yaml）
 asgard doctor           # 体检到全绿 = 配置完成
 asgard schedule print   # 生成 crontab / launchd 片段，复制安装
 ```

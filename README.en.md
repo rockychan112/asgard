@@ -70,7 +70,7 @@ asgard brief https://example.com/some-news
 # a full daily brief: fetch your feeds, refract each item, write briefs/YYYY-MM-DD.md
 asgard daily --profile examples/profile.sample.yaml --feeds examples/feeds.example.yaml
 
-# get one every day: write a config (md/html + when to run, see examples/config.sample.yaml)
+# get one every day: write a config (lang zh/en + md/html + when to run, see examples/config.sample.yaml)
 asgard doctor           # all checks green = configured
 asgard schedule print   # emits crontab / launchd snippets to copy-paste
 ```

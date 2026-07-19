@@ -17,6 +17,7 @@ from pathlib import Path
 from .analyzer import Event, Refraction, extract_event, refract
 from .config import SEARCH_BASES, Config
 from .feeds import FeedConfig, Item, collect
+from .i18n import t
 from .persona import Persona
 from .render_html import render_brief_html
 from .sources import Article, from_url
@@ -57,17 +58,18 @@ class _Result:
     error: str = ""
 
 
-def _process(item: Item, persona: Persona) -> _Result:
+def _process(item: Item, persona: Persona, lang: str) -> _Result:
     try:
-        event = extract_event(_article(item))
-        return _Result(item, event, refract(event, persona))
+        event = extract_event(_article(item), lang=lang)
+        return _Result(item, event, refract(event, persona, lang=lang))
     except Exception as e:  # noqa: BLE001 — one bad item must not kill the day
         return _Result(item, error=f"{type(e).__name__}: {e}")
 
 
-def _facts_prose(event: Event) -> str:
+def _facts_prose(event: Event, lang: str = "zh") -> str:
+    s = t(lang)
     cleaned = [re.sub(r"^S-\d+\s*", "", f).rstrip("。.;；") for f in event.facts[:4]]
-    return "；".join(c for c in cleaned if c) + "。" if any(cleaned) else "—"
+    return s["sep"].join(c for c in cleaned if c) + s["stop"] if any(cleaned) else "—"
 
 
 def _is_briefed(r: _Result) -> bool:
@@ -76,7 +78,9 @@ def _is_briefed(r: _Result) -> bool:
 
 def render_brief(
     day: str, profile_path: str, results: list[_Result], feed_notes: list[str],
+    lang: str = "zh",
 ) -> str:
+    s = t(lang)
     briefed = [r for r in results if _is_briefed(r)]
     errored = [r for r in results if r.error]
     skipped = [r for r in results if not r.error and not _is_briefed(r)]
@@ -85,20 +89,21 @@ def render_brief(
         "---",
         f"date: {day}",
         "engine: cli",
+        f"lang: {lang}",
         f"profile: {profile_path}",
         f"candidates: {len(results)}",
         f"briefed: {len(briefed)}",
         f"skipped: {len(skipped)}",
         "---",
         "",
-        f"# Asgard 日报 · {day}",
+        f"# {s['title']} · {day}",
         "",
     ]
 
     if not results:
-        lines += ["今天没有可用的新闻。所有信源都拉取失败，详见下方「信源异常」。", ""]
+        lines += [s["no_news"], ""]
     elif not briefed:
-        lines += [f"今天没有值得你看的。检查了 {len(results)} 条，全部与你的资料无关。", ""]
+        lines += [s["all_skip"].format(n=len(results)), ""]
 
     for i, r in enumerate(briefed, 1):
         card, event = r.card, r.event
@@ -109,28 +114,28 @@ def render_brief(
         lines += [
             f"## {i}. {event.headline}  ·  {r.item.source}",
             "",
-            f"**事实**：{_facts_prose(event)}",
+            f"**{s['facts']}**{s['colon']}{_facts_prose(event, lang)}",
             "",
-            f"**对你**：{card.stakes or card.why_you}（依据 {cite}）",
+            f"**{s['for_you']}**{s['colon']}{card.stakes or card.why_you}{s['pl']}{s['cite']} {cite}{s['pr']}",
             "",
-            "**这周能做**：",
+            f"**{s['this_week']}**{s['colon']}",
             *[f"- {a}" for a in card.actions],
         ]
         if r.item.link:
-            lines += ["", f"<sub>[原文]({r.item.link})</sub>"]
+            lines += ["", f"<sub>[{s['original']}]({r.item.link})</sub>"]
         lines += [""]
 
     if skipped:
-        lines += [f"## 跳过（{len(skipped)} 条）", ""]
+        lines += [f"## {s['skipped_h'].format(n=len(skipped))}", ""]
         for r in skipped:
-            reason = (r.card.skip_reason if r.card else "") or "间接相关，未到需要你看的程度"
+            reason = (r.card.skip_reason if r.card else "") or s["fallback_skip"]
             lines += [f"- {r.item.title} — {reason}"]
         lines += [""]
 
     if errored or feed_notes:
-        lines += ["## 信源异常", ""]
+        lines += [f"## {s['issues_h']}", ""]
         lines += [f"- {note}" for note in feed_notes]
-        lines += [f"- {r.item.title} — 处理失败（{r.error}）" for r in errored]
+        lines += [f"- {r.item.title} — {s['process_fail'].format(err=r.error)}" for r in errored]
         lines += [""]
 
     return "\n".join(lines)
@@ -140,11 +145,14 @@ def run(
     profile: str | None, feeds: str | None, out: str | None,
     max_items: int | None = None, workers: int = 4,
     config: str | None = None, formats: list[str] | None = None,
+    lang: str | None = None,
 ) -> int:
     conf = Config.load(config)
     if conf.source and conf.problems():
         sys.exit(f"{conf.source} 有问题：\n  - " + "\n  - ".join(conf.problems()))
     formats = formats or conf.output.formats
+    lang = lang or conf.lang
+    s = t(lang)
 
     profile_path = resolve_config(profile or conf.profile, "profile.yaml")
     if not profile_path:
@@ -164,14 +172,14 @@ def run(
     if max_items:
         cfg.max_items_per_day = max_items
 
-    print(f"[asgard] 拉取 {len(cfg.feeds)} 个信源…", file=sys.stderr)
-    items, feed_notes = collect(cfg)
+    print(f"[asgard] {s['p_fetch'].format(n=len(cfg.feeds))}", file=sys.stderr)
+    items, feed_notes = collect(cfg, lang=lang)
     for note in feed_notes:
         print(f"[asgard] ⚠ {note}", file=sys.stderr)
-    print(f"[asgard] {len(items)} 条候选，逐条折射…", file=sys.stderr)
+    print(f"[asgard] {s['p_refract'].format(n=len(items))}", file=sys.stderr)
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        results = list(pool.map(lambda it: _process(it, persona), items))
+        results = list(pool.map(lambda it: _process(it, persona, lang), items))
 
     day = date.today().isoformat()
     if out:
@@ -185,14 +193,15 @@ def run(
 
     written = []
     if "md" in formats:
-        out_path.write_text(render_brief(day, str(profile_path), results, feed_notes), encoding="utf-8")
+        out_path.write_text(render_brief(day, str(profile_path), results, feed_notes, lang=lang), encoding="utf-8")
         written.append(out_path)
     if "html" in formats:
         html_path = out_path.with_suffix(".html")
-        html_path.write_text(render_brief_html(day, results, feed_notes, _is_briefed), encoding="utf-8")
+        html_path.write_text(render_brief_html(day, results, feed_notes, _is_briefed, lang=lang), encoding="utf-8")
         written.append(html_path)
 
     briefed = sum(1 for r in results if _is_briefed(r))
     ok = sum(1 for r in results if not r.error)
-    print(f"[asgard] 日报已写入 {' + '.join(map(str, written))}（候选 {len(results)} · 入报 {briefed} · 跳过 {ok - briefed}）")
+    print("[asgard] " + s["p_written"].format(
+        paths=" + ".join(map(str, written)), candidates=len(results), briefed=briefed, skipped=ok - briefed))
     return 2 if not ok else 0  # nothing processed at all -> flag for cron, files still written

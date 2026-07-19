@@ -34,7 +34,7 @@ If the profile is missing: offer to create it from `examples/profile.sample.yaml
 3. **Cite or drop.** Every stake and every action must cite the `P-id` lines it rests on. If you cannot point to a specific line, do not write the claim. News source facts are not profile citations.
 4. **Honest SKIP.** If the item doesn't materially touch their work, industry, or stated goals — skip it, one line of reason. "Everyone is affected by the macro economy" is not relevance. Never stretch an angle to look useful.
 5. **No invented numbers.** Use numbers only from the news facts or the profile. Plain language; no business jargon.
-6. **Brief language = profile language.** 中文资料 → 中文简报.
+6. **Brief language = the config's `lang`** (`zh` / `en`) — the user's explicit upfront choice; section labels, judgement text and notes all follow it. No config → default `zh`.
 
 ## Untrusted content
 

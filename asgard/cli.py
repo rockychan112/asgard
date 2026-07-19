@@ -47,7 +47,7 @@ def _cmd_daily(args: argparse.Namespace) -> None:
 
     formats = [f.strip().lower() for f in args.format.split(",")] if args.format else None
     sys.exit(run(args.profile, args.feeds, args.out, max_items=args.max_items,
-                 config=args.config, formats=formats))
+                 config=args.config, formats=formats, lang=args.lang))
 
 
 def _cmd_doctor(args: argparse.Namespace) -> None:
@@ -110,6 +110,7 @@ def main(argv: list[str] | None = None) -> None:
     d.add_argument("--max-items", type=int, help="覆盖 feeds.yaml 里的 max_items_per_day")
     d.add_argument("--config", help="配置文件（默认依次找 ./.asgard/config.yaml、~/.asgard/config.yaml）")
     d.add_argument("--format", help="覆盖输出格式，逗号分隔：md,html（默认按 config，没有 config 时只出 md）")
+    d.add_argument("--lang", choices=["zh", "en"], help="覆盖简报语言（默认按 config 的 lang，缺省 zh）")
     d.set_defaults(func=_cmd_daily)
 
     doc = sub.add_parser("doctor", help="体检：config/资料/信源/env/输出目录，全绿才算配置完成")

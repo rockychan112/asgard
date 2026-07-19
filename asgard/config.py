@@ -34,6 +34,7 @@ class Schedule:
 
 @dataclass
 class Config:
+    lang: str = "zh"  # brief language — the user's explicit upfront choice
     profile: str = ""
     feeds: str = ""
     output: Output = field(default_factory=Output)
@@ -59,6 +60,7 @@ class Config:
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         out, sch = data.get("output") or {}, data.get("schedule") or {}
         return cls(
+            lang=str(data.get("lang") or "zh").lower(),
             profile=str(data.get("profile") or ""),
             feeds=str(data.get("feeds") or ""),
             output=Output(
@@ -75,6 +77,8 @@ class Config:
 
     def problems(self) -> list[str]:
         out = []
+        if self.lang not in ("zh", "en"):
+            out.append(f"lang 应为 zh 或 en，现在是 {self.lang!r}")
         for f in self.output.formats:
             if f not in FORMATS:
                 out.append(f"output.formats 含未知格式 {f!r}（可选：{'/'.join(FORMATS)}）")

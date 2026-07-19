@@ -46,54 +46,58 @@ def _e(s: str) -> str:
     return _html.escape(s or "")
 
 
-def render_brief_html(day: str, results, feed_notes: list[str], is_briefed) -> str:
+def render_brief_html(day: str, results, feed_notes: list[str], is_briefed, lang: str = "zh") -> str:
+    from .i18n import t
+
+    s = t(lang)
     briefed = [r for r in results if is_briefed(r)]
     errored = [r for r in results if r.error]
     skipped = [r for r in results if not r.error and not is_briefed(r)]
+    meta = s["meta"].format(candidates=len(results), briefed=len(briefed), skipped=len(skipped))
 
     parts = [
-        "<!doctype html>", '<html lang="zh">', "<head>",
+        "<!doctype html>", f'<html lang="{lang}">', "<head>",
         '<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">',
-        f"<title>Asgard 日报 · {_e(day)}</title>", f"<style>{_CSS}</style>", "</head>", "<body>",
+        f"<title>{s['title']} · {_e(day)}</title>", f"<style>{_CSS}</style>", "</head>", "<body>",
         "<header>",
-        f"<h1>Asgard 日报 · {_e(day)}</h1>",
-        f'<div class="meta">候选 {len(results)} · 入报 {len(briefed)} · 跳过 {len(skipped)} · engine: cli</div>',
+        f"<h1>{s['title']} · {_e(day)}</h1>",
+        f'<div class="meta">{meta} · engine: cli</div>',
         "</header>",
     ]
 
     if not results:
-        parts.append('<div class="empty">今天没有可用的新闻。所有信源都拉取失败，详见下方「信源异常」。</div>')
+        parts.append(f'<div class="empty">{_e(s["no_news"])}</div>')
     elif not briefed:
-        parts.append(f'<div class="empty">今天没有值得你看的。检查了 {len(results)} 条，全部与你的资料无关。</div>')
+        parts.append(f'<div class="empty">{_e(s["all_skip"].format(n=len(results)))}</div>')
 
     for i, r in enumerate(briefed, 1):
         card, event = r.card, r.event
-        facts = "；".join(re.sub(r"^S-\d+\s*", "", f).rstrip("。.;；") for f in event.facts[:4])
+        facts = s["sep"].join(re.sub(r"^S-\d+\s*", "", f).rstrip("。.;；") for f in event.facts[:4])
         cite = " · ".join(f for f in card.used_facts if f.upper().startswith("P-")) or "—"
         parts += [
             "<article>",
             f"<h2>{i}. {_e(event.headline)}</h2>",
             f'<div class="src">{_e(r.item.source)}'
-            + (f' · <a href="{_e(r.item.link)}">原文</a>' if r.item.link else "") + "</div>",
-            f'<div class="label">事实</div><div>{_e(facts)}。</div>' if facts else "",
-            f'<div class="label">对你</div><div>{_e(card.stakes or card.why_you)}</div>',
+            + (f' · <a href="{_e(r.item.link)}">{s["original"]}</a>' if r.item.link else "") + "</div>",
+            f'<div class="label">{s["facts"]}</div><div>{_e(facts)}{s["stop"]}</div>' if facts else "",
+            f'<div class="label">{s["for_you"]}</div><div>{_e(card.stakes or card.why_you)}</div>',
         ]
         if card.actions:
-            parts.append('<div class="label">这周能做</div><ul>'
+            parts.append(f'<div class="label">{s["this_week"]}</div><ul>'
                          + "".join(f"<li>{_e(a)}</li>" for a in card.actions) + "</ul>")
-        parts += [f'<div class="cite">依据 <b>{_e(cite)}</b></div>', "</article>"]
+        parts += [f'<div class="cite">{s["cite"]} <b>{_e(cite)}</b></div>', "</article>"]
 
     if skipped:
-        parts.append('<section class="skiplist"><h2>跳过（' + str(len(skipped)) + " 条）</h2><ul>")
+        parts.append(f'<section class="skiplist"><h2>{_e(s["skipped_h"].format(n=len(skipped)))}</h2><ul>')
         for r in skipped:
-            reason = (r.card.skip_reason if r.card else "") or "间接相关，未到需要你看的程度"
+            reason = (r.card.skip_reason if r.card else "") or s["fallback_skip"]
             parts.append(f"<li><b>{_e(r.item.title)}</b> — {_e(reason)}</li>")
         parts.append("</ul></section>")
 
     if errored or feed_notes:
-        parts.append('<section class="errlist"><h2>信源异常</h2><ul>')
+        parts.append(f'<section class="errlist"><h2>{s["issues_h"]}</h2><ul>')
         parts += [f"<li>{_e(n)}</li>" for n in feed_notes]
-        parts += [f"<li>{_e(r.item.title)} — 处理失败（{_e(r.error)}）</li>" for r in errored]
+        parts += [f"<li>{_e(r.item.title)} — {_e(s['process_fail'].format(err=r.error))}</li>" for r in errored]
         parts.append("</ul></section>")
 
     parts += ["</body>", "</html>"]

@@ -103,17 +103,20 @@ def fetch_feed(feed: Feed, timeout: int = 20) -> list[Item]:
     return parse_feed(urlopen(req, timeout=timeout).read(), source=feed.name)  # noqa: S310
 
 
-def collect(cfg: FeedConfig) -> tuple[list[Item], list[str]]:
+def collect(cfg: FeedConfig, lang: str | None = None) -> tuple[list[Item], list[str]]:
     """All feeds -> capped newest-first candidates + human-readable failure notes."""
+    from .i18n import t
+
+    s = t(lang)
     items, notes = [], []
     for feed in cfg.feeds:
         try:
             got = fetch_feed(feed)
         except Exception as e:  # noqa: BLE001 — any single-feed failure becomes a note
-            notes.append(f"{feed.name}: 拉取失败（{type(e).__name__}: {e}）")
+            notes.append(s["fetch_fail"].format(name=feed.name, err=f"{type(e).__name__}: {e}"))
             continue
         if not got:
-            notes.append(f"{feed.name}: 解析到 0 条（该源格式可能不受支持）")
+            notes.append(s["parse_zero"].format(name=feed.name))
         items.extend(got)
 
     seen: set[str] = set()

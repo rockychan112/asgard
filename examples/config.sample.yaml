@@ -3,6 +3,8 @@
 # ASGARD_MODEL），建议放 ~/.asgard/env（chmod 600），定时任务里 source 它。
 # 改完跑 `asgard doctor`，全绿才算配置完成。
 
+lang: zh                   # 简报语言：zh | en（栏目、正文、提示全部跟随）
+
 # 资料和信源不写时按默认位置找（./.asgard/ → ~/.asgard/）
 # profile: ~/.asgard/profile.yaml
 # feeds: ~/.asgard/feeds.yaml

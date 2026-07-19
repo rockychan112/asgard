@@ -56,8 +56,9 @@ on schedule is what the user keeps. Ask if they want it (most do), then:
 1. **Feeds**: copy `examples/feeds.example.yaml` → `~/.asgard/feeds.yaml`,
    adjust the sources with the user (3–8 feeds is the sweet spot).
 2. **Config**: write `~/.asgard/config.yaml` from `examples/config.sample.yaml`.
-   Ask exactly two things: output format (`md` / `html` / both) and when to
-   run (daily HH:MM, or weekly + weekday).
+   Ask exactly three things: brief language (`zh` / `en` — sections, judgement
+   text and notes all follow it), output format (`md` / `html` / both), and
+   when to run (daily HH:MM, or weekly + weekday).
 3. **Health check**: run `asgard doctor --json` and fix until every check is
    green. The green doctor — not your own judgement — is the completion bar.
 4. **First daily run**: `asgard daily`; show the user the file(s) it wrote
