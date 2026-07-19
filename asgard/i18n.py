@@ -10,6 +10,9 @@ STR = {
     "zh": {
         "title": "Asgard 日报",
         "meta": "候选 {candidates} · 入报 {briefed} · 跳过 {skipped}",
+        "st_candidates": "条候选",
+        "st_briefed": "条入报",
+        "st_skipped": "条跳过",
         "facts": "事实",
         "for_you": "对你",
         "this_week": "这周能做",
@@ -35,6 +38,9 @@ STR = {
     "en": {
         "title": "Asgard Daily Brief",
         "meta": "candidates {candidates} · briefed {briefed} · skipped {skipped}",
+        "st_candidates": "candidates",
+        "st_briefed": "briefed",
+        "st_skipped": "skipped",
         "facts": "Facts",
         "for_you": "For you",
         "this_week": "This week",
