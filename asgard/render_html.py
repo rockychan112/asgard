@@ -39,14 +39,18 @@ a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 /* ---- masthead ---- */
-.mast { margin-bottom: 2.4rem; }
+.mast { margin-bottom: 2.6rem; text-align: center; }
 .brand {
   font-family: var(--mono); font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--faint); display: flex; align-items: center; gap: .5rem;
+  color: var(--faint); display: inline-flex; align-items: center; gap: .5rem;
 }
 .brand .glyph { color: var(--accent); font-size: .9rem; }
-h1 { font-size: 1.65rem; line-height: 1.2; letter-spacing: -.02em; margin: .55rem 0 1.15rem; font-weight: 700; }
-.stats { display: flex; gap: .5rem; flex-wrap: wrap; }
+.prism { display: block; width: min(320px, 78%); height: auto; margin: .5rem auto .1rem; }
+.prism .edge { stroke: var(--faint); stroke-width: 1.1; fill: none; opacity: .8; }
+.prism .face { fill: var(--accent-soft); stroke: var(--faint); stroke-width: 1; opacity: .9; }
+.prism .beam { fill: var(--faint); opacity: .5; }
+h1 { font-size: 1.7rem; line-height: 1.2; letter-spacing: -.02em; margin: .35rem 0 1.2rem; font-weight: 700; }
+.stats { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; }
 .stat {
   font-family: var(--mono); font-size: .74rem; color: var(--muted);
   border: 1px solid var(--line); border-radius: 999px; padding: .28rem .7rem;
@@ -116,10 +120,34 @@ article::before {
 .skiplist li::before { content: ""; position: absolute; left: 0; top: .62em; width: 4px; height: 4px; border-radius: 50%; background: var(--faint); }
 .skiplist li b { color: var(--fg); font-weight: 600; }
 .errlist li { font-family: var(--mono); font-size: .78rem; line-height: 1.55; color: var(--faint); }
+
+/* ---- footer ---- */
+footer { margin-top: 3.2rem; text-align: center; font-family: var(--mono); font-size: .68rem; letter-spacing: .1em; color: var(--faint); }
+footer .glyph { color: var(--accent); }
 """
 
 # Decorative accent rotation for card hairlines/numbers — no contrast requirement.
 _HUES = ("#e6b450", "#43c6b8", "#9a86f0", "#e08bb0")
+
+# The masthead prism: one beam of news enters, splits into the four accent
+# beams that then rotate through the cards below — the fact/interpretation
+# split made visual, once, not repeated per card. Fills adapt to theme via CSS
+# vars; ray gradients (soft, no blend mode) read on both light and dark.
+_PRISM = """<svg class="prism" viewBox="0 0 360 116" role="presentation" aria-hidden="true">
+  <defs>
+    <linearGradient id="r0" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6b450" stop-opacity=".55"/><stop offset="1" stop-color="#e6b450" stop-opacity="0"/></linearGradient>
+    <linearGradient id="r1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#43c6b8" stop-opacity=".55"/><stop offset="1" stop-color="#43c6b8" stop-opacity="0"/></linearGradient>
+    <linearGradient id="r2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a86f0" stop-opacity=".55"/><stop offset="1" stop-color="#9a86f0" stop-opacity="0"/></linearGradient>
+    <linearGradient id="r3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e08bb0" stop-opacity=".55"/><stop offset="1" stop-color="#e08bb0" stop-opacity="0"/></linearGradient>
+  </defs>
+  <rect class="beam" x="178" y="0" width="4" height="46"/>
+  <polygon class="ray" fill="url(#r0)" points="178,84 182,84 92,116 58,116"/>
+  <polygon class="ray" fill="url(#r1)" points="178,84 182,84 168,116 132,116"/>
+  <polygon class="ray" fill="url(#r2)" points="178,84 182,84 238,116 202,116"/>
+  <polygon class="ray" fill="url(#r3)" points="178,84 182,84 312,116 276,116"/>
+  <polygon class="face" points="180,44 202,84 158,84"/>
+  <line class="edge" x1="180" y1="50" x2="192" y2="80"/>
+</svg>"""
 
 
 def _e(s: str) -> str:
@@ -147,6 +175,7 @@ def render_brief_html(day: str, results, feed_notes: list[str], is_briefed, lang
         f"<title>{s['title']} · {_e(day)}</title>", f"<style>{_CSS}</style>", "</head>", "<body>",
         '<div class="mast">',
         f'<div class="brand"><span class="glyph">◭</span> {s["title"]}</div>',
+        _PRISM,
         f"<h1>{_e(day)}</h1>",
         f'<div class="stats">{stat_row}</div>',
         "</div>",
@@ -197,5 +226,6 @@ def render_brief_html(day: str, results, feed_notes: list[str], is_briefed, lang
         parts += [f"<li>{_e(r.item.title)} — {_e(s['process_fail'].format(err=r.error))}</li>" for r in errored]
         parts.append("</ul></section>")
 
+    parts.append(f'<footer><span class="glyph">◭</span> {s["title"]} · {s["foot"]}</footer>')
     parts += ["</body>", "</html>"]
     return "\n".join(p for p in parts if p)
