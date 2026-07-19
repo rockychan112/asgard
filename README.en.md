@@ -36,7 +36,7 @@ Asgard also ships as a skill for agents like Claude Code / Codex / Cursor: every
 npx skills add https://github.com/rockychan112/asgard
 ```
 
-Three steps: install the skill → write your profile from `examples/profile.sample.yaml` → have the agent schedule a daily job (no scheduler in your agent? just say "asgard daily brief" whenever — it still works).
+Three steps: install the skill → say "asgard daily brief" once — on first run it walks you through setup itself (clones the repo, interviews your profile, wires your model endpoint, and doesn't call it done until a real run works) → have the agent schedule a daily job (no scheduler? just say it whenever — it still works).
 
 What the skill installs is a **protocol** — the fact contract, the citation rule, the skip rule — not a magic prompt.
 
@@ -51,7 +51,7 @@ Rather not go through an agent? `asgard daily` does the same thing in one comman
 
 ```bash
 git clone https://github.com/rockychan112/asgard && cd asgard
-uv venv && uv pip install -e .
+uv venv && uv pip install -e .   # no uv: python3 -m venv .venv && .venv/bin/pip install -e .
 
 # any OpenAI-compatible endpoint: DeepSeek / local Ollama / OpenAI …
 export OPENAI_BASE_URL=...

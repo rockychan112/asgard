@@ -53,8 +53,15 @@ without a successful real run — "should work" is not done.
 The single verification run above proves the pipeline; a daily brief landing
 on schedule is what the user keeps. Ask if they want it (most do), then:
 
-1. **Feeds**: copy `examples/feeds.example.yaml` → `~/.asgard/feeds.yaml`,
-   adjust the sources with the user (3–8 feeds is the sweet spot).
+1. **Feeds**: you just built the profile, so you know their field — use it.
+   Ask which sources they already read for work, and suggest 2–3 obvious
+   RSS-capable sources for that field yourself (a designer gets design/product
+   feeds, an indie dev gets HN + platform news, an investor gets market feeds —
+   don't just hand everyone the generic sample). Land on 3–8 feeds total in
+   `~/.asgard/feeds.yaml` (start from `examples/feeds.example.yaml`).
+   Precision beats volume: the daily cap keeps only the newest
+   `max_items_per_day` items (default 20) across ALL feeds by recency, so one
+   noisy general feed can crowd a relevant niche feed out of the day entirely.
 2. **Config**: write `~/.asgard/config.yaml` from `examples/config.sample.yaml`.
    Ask exactly three things: brief language (`zh` / `en` — sections, judgement
    text and notes all follow it), output format (`md` / `html` / both), and
