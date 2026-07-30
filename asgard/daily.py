@@ -50,12 +50,54 @@ def _article(item: Item) -> Article:
     )
 
 
+class SetupError(Exception):
+    """Something the reader still has to set up before a brief can run.
+
+    Recoverable, so the caller decides how to say it: the CLI exits with the
+    message, the MCP server turns it into a needs_setup answer with steps.
+    """
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+        self.message = message
+
+
 @dataclass
 class _Result:
     item: Item
     event: Event | None = None
     card: Refraction | None = None
     error: str = ""
+
+
+@dataclass
+class DailyRun:
+    """One day's work: what was read, what came of it, where it was written."""
+
+    day: str
+    lang: str
+    profile_path: Path
+    results: list[_Result]
+    feed_notes: list[str]
+    written: list[Path]
+
+    @property
+    def briefed(self) -> list[_Result]:
+        return [r for r in self.results if _is_briefed(r)]
+
+    @property
+    def skipped(self) -> list[_Result]:
+        return [r for r in self.results if not r.error and not _is_briefed(r)]
+
+    @property
+    def errored(self) -> list[_Result]:
+        return [r for r in self.results if r.error]
+
+    @property
+    def processed(self) -> int:
+        """Items that came back with a judgement — the all-failed check."""
+        return sum(1 for r in self.results if not r.error)
 
 
 def _process(item: Item, persona: Persona, lang: str) -> _Result:
@@ -141,30 +183,35 @@ def render_brief(
     return "\n".join(lines)
 
 
-def run(
+def run_daily(
     profile: str | None, feeds: str | None, out: str | None,
     max_items: int | None = None, workers: int = 4,
     config: str | None = None, formats: list[str] | None = None,
     lang: str | None = None,
-) -> int:
+) -> DailyRun:
+    """Do the day's work and write the files. Progress goes to stderr only —
+    stdout belongs to the caller (and to the MCP server's JSON-RPC stream).
+    """
     conf = Config.load(config)
     if conf.source and conf.problems():
-        sys.exit(f"{conf.source} 有问题：\n  - " + "\n  - ".join(conf.problems()))
+        raise SetupError("CONFIG_INVALID", f"{conf.source} 有问题：\n  - " + "\n  - ".join(conf.problems()))
     formats = formats or conf.output.formats
     lang = lang or conf.lang
     s = t(lang)
 
     profile_path = resolve_config(profile or conf.profile, "profile.yaml")
     if not profile_path:
-        sys.exit(
+        raise SetupError(
+            "PROFILE_MISSING",
             "找不到你的资料文件。放一份到 ~/.asgard/profile.yaml（或用 --profile 指定），"
-            "样例见 examples/profile.sample.yaml"
+            "样例见 examples/profile.sample.yaml",
         )
     feeds_path = resolve_config(feeds or conf.feeds, "feeds.yaml")
     if not feeds_path:
-        sys.exit(
+        raise SetupError(
+            "FEEDS_MISSING",
             "找不到信源列表。放一份到 ~/.asgard/feeds.yaml（或用 --feeds 指定），"
-            "样例见 examples/feeds.example.yaml"
+            "样例见 examples/feeds.example.yaml",
         )
 
     persona = Persona.load(profile_path)
@@ -200,8 +247,23 @@ def run(
         html_path.write_text(render_brief_html(day, results, feed_notes, _is_briefed, lang=lang), encoding="utf-8")
         written.append(html_path)
 
-    briefed = sum(1 for r in results if _is_briefed(r))
-    ok = sum(1 for r in results if not r.error)
+    return DailyRun(day=day, lang=lang, profile_path=profile_path,
+                    results=results, feed_notes=feed_notes, written=written)
+
+
+def run(
+    profile: str | None, feeds: str | None, out: str | None,
+    max_items: int | None = None, workers: int = 4,
+    config: str | None = None, formats: list[str] | None = None,
+    lang: str | None = None,
+) -> int:
+    """CLI entry point: run the day, print the one-line summary, return an exit code."""
+    try:
+        r = run_daily(profile, feeds, out, max_items, workers, config, formats, lang)
+    except SetupError as e:
+        sys.exit(e.message)
+    s = t(r.lang)
     print("[asgard] " + s["p_written"].format(
-        paths=" + ".join(map(str, written)), candidates=len(results), briefed=briefed, skipped=ok - briefed))
-    return 2 if not ok else 0  # nothing processed at all -> flag for cron, files still written
+        paths=" + ".join(map(str, r.written)), candidates=len(r.results),
+        briefed=len(r.briefed), skipped=r.processed - len(r.briefed)))
+    return 2 if not r.processed else 0  # nothing processed at all -> flag for cron, files still written

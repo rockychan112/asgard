@@ -13,6 +13,9 @@ dependencies = [
 
 [project.optional-dependencies]
 fetch = ["readability-lxml>=0.8", "lxml>=5.0"]
+mcp = [
+    "mcp>=2.0",
+]
 
 [project.scripts]
 asgard = "asgard.cli:main"
