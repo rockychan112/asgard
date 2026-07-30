@@ -19,6 +19,7 @@ mcp = [
 
 [project.scripts]
 asgard = "asgard.cli:main"
+asgard-mcp = "asgard.mcp_server:main"
 
 [build-system]
 requires = ["setuptools>=68"]
