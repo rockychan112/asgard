@@ -5,11 +5,9 @@ import sys
 from pathlib import Path
 
 from .analyzer import extract_event, refract
-from .persona import Persona
+from .persona import PERSONA_DIR, Persona
 from .render import render_card, render_event
 from .sources import Article, from_text, load
-
-PERSONA_DIR = Path(__file__).resolve().parent / "personas"
 
 
 def _personas(slug: str | None) -> list[Persona]:
