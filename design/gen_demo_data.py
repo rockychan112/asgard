@@ -31,7 +31,7 @@ IDENTITIES = ["travel-lead", "ecommerce-seller", "interior-designer", "wedding-p
 
 def build_item(news: str) -> dict:
     event = extract_event(load(f"fixture:{news}"))
-    personas = [Persona.load(ROOT / "personas" / f"{slug}.yaml") for slug in IDENTITIES]
+    personas = [Persona.load(ROOT / "asgard" / "personas" / f"{slug}.yaml") for slug in IDENTITIES]
     with ThreadPoolExecutor(max_workers=4) as ex:
         cards = list(ex.map(lambda p: asdict(refract(event, p)), personas))
     for slug, card in zip(IDENTITIES, cards):

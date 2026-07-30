@@ -80,7 +80,7 @@ asgard schedule print   # emits crontab / launchd snippets to copy-paste
 Asgard knows you through one profile file: one fact per line, each line numbered.
 
 ```yaml
-# personas/travel-lead.yaml
+# ~/.asgard/profile.yaml
 label: Online travel platform · business analyst
 facts:
   P-role: Business analyst at an online travel platform, working on flight-business analytics

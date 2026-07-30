@@ -80,7 +80,7 @@ asgard schedule print   # 生成 crontab / launchd 片段，复制安装
 Asgard 认识你的方式，是一份资料文件：一行一条信息，行首是编号。
 
 ```yaml
-# personas/travel-lead.yaml
+# ~/.asgard/profile.yaml
 label: 在线旅游平台 · 商业分析师
 facts:
   P-role: 在线旅游(OTA)平台商业分析师，做机票业务的经营与数据分析

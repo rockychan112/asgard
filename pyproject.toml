@@ -23,3 +23,9 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = ["asgard"]
+
+# the demo personas and news fixtures live inside the package so a plain
+# `pip install` / `uvx` install can run `brief fixture:...` and list the demo
+# identities — outside it they simply would not ship
+[tool.setuptools.package-data]
+asgard = ["personas/*.yaml", "fixtures/*.json"]

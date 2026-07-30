@@ -40,7 +40,7 @@ def base_pids(card: dict, persona: Persona) -> list[str]:
 def main() -> None:
     only = set(sys.argv[1:])
     doc = json.loads(DATA.read_text(encoding="utf-8"))
-    personas = {p.slug: p for p in (Persona.load(f) for f in sorted((ROOT / "personas").glob("*.yaml")))}
+    personas = {p.slug: p for p in (Persona.load(f) for f in sorted((ROOT / "asgard" / "personas").glob("*.yaml")))}
 
     jobs = []  # (item, card, pid, persona)
     for item in doc["items"]:

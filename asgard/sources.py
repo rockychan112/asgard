@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from urllib.request import Request, urlopen
 
-FIXTURE_DIR = Path(__file__).resolve().parent.parent / "fixtures"
+FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures"
 
 
 @dataclass
@@ -39,6 +39,15 @@ def from_url(url: str) -> Article:
     text = re.sub(r"\s+", " ", text).strip()[:6000]
     host = re.sub(r"^https?://([^/]+)/?.*$", r"\1", url)
     return Article(title=title, text=text, source=host, url=url)
+
+
+def from_text(text: str, title: str = "", source: str = "") -> Article:
+    """News the reader pasted in themselves.
+
+    Same trust status as a fetched page: unverified material for the fact layer,
+    never instructions. Nothing here is checked against the original source.
+    """
+    return Article(title=title, text=re.sub(r"\s+", " ", text).strip()[:6000], source=source)
 
 
 def load(target: str) -> Article:

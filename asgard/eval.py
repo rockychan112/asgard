@@ -24,7 +24,7 @@ from .persona import Persona
 from .sources import load
 
 ROOT = Path(__file__).resolve().parent.parent
-PERSONA_DIR = ROOT / "personas"
+PERSONA_DIR = Path(__file__).resolve().parent / "personas"
 CASES = ROOT / "eval" / "cases.yaml"
 ARMS = ("refraction", "keyword", "longprompt")
 _WORKERS = 8  # the run is I/O-bound (hundreds of API calls); fan out per independent cell

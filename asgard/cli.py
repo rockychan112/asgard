@@ -7,9 +7,9 @@ from pathlib import Path
 from .analyzer import extract_event, refract
 from .persona import Persona
 from .render import render_card, render_event
-from .sources import load
+from .sources import Article, from_text, load
 
-PERSONA_DIR = Path(__file__).resolve().parent.parent / "personas"
+PERSONA_DIR = Path(__file__).resolve().parent / "personas"
 
 
 def _personas(slug: str | None) -> list[Persona]:
@@ -21,14 +21,34 @@ def _personas(slug: str | None) -> list[Persona]:
         if not path.exists():
             sys.exit(f"未知 persona：{slug}（不是文件路径，{PERSONA_DIR} 下也没有 {slug}.yaml）")
         return [Persona.load(path)]
-    return [Persona.load(p) for p in sorted(PERSONA_DIR.glob("*.yaml"))]
+    built_in = sorted(PERSONA_DIR.glob("*.yaml"))
+    if not built_in:  # never silently return zero cards
+        sys.exit(f"{PERSONA_DIR} 下没有任何内置 persona——用 --persona 指定你自己的资料文件")
+    return [Persona.load(p) for p in built_in]
+
+
+def _article(args: argparse.Namespace) -> Article:
+    """A URL, a built-in fixture, or text the reader pasted in themselves."""
+    if args.text is not None and args.target:
+        sys.exit("target 和 --text 给一个就行：要么 URL/fixture:NAME，要么直接贴正文")
+    if args.text is not None:
+        text = args.text
+    elif args.target == "-":
+        text = sys.stdin.read()
+    elif args.target:
+        return load(args.target)
+    else:
+        sys.exit("要看哪条新闻？给个 URL 或 fixture:NAME，或用 --text 贴正文（写 - 从标准输入读）")
+    if not text.strip():
+        sys.exit("正文是空的——贴一段新闻正文再试")
+    return from_text(text)
 
 
 def _cmd_brief(args: argparse.Namespace) -> None:
     import dataclasses
     import json
 
-    article = load(args.target)
+    article = _article(args)
     event = extract_event(article)
     cards = [refract(event, persona) for persona in _personas(args.persona)]
     if args.json:  # machine-readable: the skill/orchestrator path (engine: cli)
@@ -98,7 +118,8 @@ def main(argv: list[str] | None = None) -> None:
     )
     sub = ap.add_subparsers(dest="cmd", required=True)
     b = sub.add_parser("brief", help="把一条新闻按你的 persona 折射")
-    b.add_argument("target", help="URL 或 fixture:NAME（如 fixture:hormuz）")
+    b.add_argument("target", nargs="?", help="URL 或 fixture:NAME（如 fixture:hormuz）；写 - 从标准输入读正文")
+    b.add_argument("--text", help="直接给新闻正文（手上只有一段文字、没有链接时用）")
     b.add_argument("--persona", help="persona slug 或你自己的资料文件路径（默认：跑全部内置 persona 做对照）")
     b.add_argument("--json", action="store_true", help="输出机器可读 JSON（skill/编排器用，engine: cli）")
     b.set_defaults(func=_cmd_brief)
