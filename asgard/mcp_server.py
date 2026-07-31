@@ -38,11 +38,14 @@ try:
         PaginatedRequestParams,
         TextContent,
         Tool,
+        ToolAnnotations,
     )
 except ModuleNotFoundError as exc:  # the SDK is an optional extra, so say so plainly
     raise SystemExit(
-        "The MCP server needs the optional SDK. Install Asgard with the 'mcp' extra:\n"
-        "  uv pip install 'asgard[mcp]'      (or)      uvx --from 'asgard[mcp]' asgard-mcp"
+        f"The MCP server can't start: no module named {exc.name!r}.\n"
+        "It needs the optional SDK. From a clone of the repository:\n"
+        "  uv sync --extra mcp        (or)      pip install -e '.[mcp]'\n"
+        "The desktop extension (.mcpb) bundles it for you."
     ) from exc
 
 from . import __version__
@@ -74,7 +77,8 @@ _S: dict[str, dict[str, str]] = {
         "chk_env_ok": "All three endpoint variables are set (values not shown).",
         "chk_env_missing": "Missing {vars} in the environment that started this server.",
         "chk_out_ok": "{path} is writable.",
-        "chk_out_bad": "{path} is not writable: {err}",
+        "chk_out_bad": "{path} is not writable — no write permission on {blocked}.",
+        "chk_out_pending": "{path} doesn't exist yet; it gets created when the first brief is written.",
         "chk_ping_ok": "The model endpoint answered.",
         "chk_ping_empty": "The model endpoint returned an empty response.",
         "chk_ping_fail": "Could not reach the model endpoint: {err}",
@@ -138,7 +142,8 @@ _S: dict[str, dict[str, str]] = {
         "chk_env_ok": "三个端点变量都在（值不显示）。",
         "chk_env_missing": "启动这个 server 的环境里缺 {vars}。",
         "chk_out_ok": "{path} 可写。",
-        "chk_out_bad": "{path} 不可写：{err}",
+        "chk_out_bad": "{path} 不可写——{blocked} 没有写权限。",
+        "chk_out_pending": "{path} 还不存在，出第一份简报时会自动建。",
         "chk_ping_ok": "模型端点有响应。",
         "chk_ping_empty": "模型端点返回了空响应。",
         "chk_ping_fail": "连不上模型端点：{err}",
@@ -271,15 +276,23 @@ def _inspect(lang_in: str | None = None, ping: bool = False) -> _State:
     checks.append(_check("API_KEY_MISSING" if missing_env else "API_KEY", not missing_env,
                          s["chk_env_missing"].format(vars=" ".join(missing_env)) if missing_env else s["chk_env_ok"]))
 
+    # Checked without touching the disk: this runs behind asgard_status, which
+    # says it is read-only. Creating the directory, or dropping a probe file
+    # just to learn we could, would make that claim false. Walk up to the
+    # nearest existing ancestor and ask the filesystem instead. The directory
+    # itself gets created by run_daily when a brief is actually written.
     out_dir = Path(cfg.output.dir).expanduser() if cfg.output.dir else Path.home() / ".asgard" / "briefs"
-    try:
-        out_dir.mkdir(parents=True, exist_ok=True)
-        probe = out_dir / ".mcp-probe"
-        probe.write_text("", encoding="utf-8")
-        probe.unlink()
-        checks.append(_check("OUTPUT_DIR", True, s["chk_out_ok"].format(path=out_dir)))
-    except Exception as e:  # noqa: BLE001
-        checks.append(_check("OUTPUT_DIR", False, s["chk_out_bad"].format(path=out_dir, err=e)))
+    anchor = out_dir
+    while not anchor.exists() and anchor != anchor.parent:
+        anchor = anchor.parent
+    writable = os.access(anchor, os.W_OK | os.X_OK)
+    if not writable:
+        out_msg = s["chk_out_bad"].format(path=out_dir, blocked=anchor)
+    elif out_dir.exists():
+        out_msg = s["chk_out_ok"].format(path=out_dir)
+    else:
+        out_msg = s["chk_out_pending"].format(path=out_dir)
+    checks.append(_check("OUTPUT_DIR", writable, out_msg))
 
     if not ping:
         checks.append(_check("MODEL_CONNECTION", True, s["chk_ping_skip"], unchecked=True))
@@ -577,6 +590,16 @@ _TOOLS = [
             "Set verify_model_connection to true only when the user reports the model cannot be reached, or when "
             "checking a fresh setup — it makes a real network call."
         ),
+        annotations=ToolAnnotations(
+            title="Check Asgard's setup",
+            # Reads configuration and lists identities; it creates nothing and
+            # writes nothing (see the output-directory check in _inspect, which
+            # asks the filesystem instead of writing a probe file).
+            read_only_hint=True,
+            idempotent_hint=True,
+            # verify_model_connection reaches the model endpoint when asked.
+            open_world_hint=True,
+        ),
         input_schema={
             "type": "object",
             "additionalProperties": False,
@@ -634,6 +657,16 @@ _TOOLS = [
             "When you relay the result, keep three things: relevance (including skip), skip_reason, and the P- ids "
             "in used_facts. A skip is this tool working as intended, not a failure — do not rewrite it into "
             "advice, and do not invent the connection it declined to make."
+        ),
+        annotations=ToolAnnotations(
+            title="What this news means for you",
+            # Reads a page and the profile, returns a judgement; nothing on disk
+            # changes.
+            read_only_hint=True,
+            # The model runs at a non-zero temperature, so the same article can
+            # come back worded differently.
+            idempotent_hint=False,
+            open_world_hint=True,
         ),
         input_schema={
             "type": "object",
@@ -739,6 +772,15 @@ _TOOLS = [
             "items into 'today's opportunities'.\n\n"
             "run.id identifies the run for auditing. It is not a task id you can poll: this version returns only "
             "once the run has finished."
+        ),
+        annotations=ToolAnnotations(
+            title="Today's brief",
+            read_only_hint=False,
+            # Honest rather than convenient: a second run on the same day
+            # overwrites that day's brief files. Hosts should ask first.
+            destructive_hint=True,
+            idempotent_hint=False,
+            open_world_hint=True,
         ),
         input_schema={
             "type": "object",

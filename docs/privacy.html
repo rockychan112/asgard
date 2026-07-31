@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asgard — Privacy Policy</title>
+<style>
+  :root { color-scheme: light dark; --fg:#16181d; --dim:#5d636e; --bg:#fbfbfc; --line:#e3e5ea; --accent:#b4762a; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg:#e6e8ec; --dim:#9aa1ad; --bg:#14161a; --line:#282c33; --accent:#d9a05b; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.7 ui-sans-serif,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; }
+  main { max-width:44rem; margin:0 auto; padding:3rem 1.25rem 5rem; }
+  h1 { font-size:1.6rem; margin:0 0 .25rem; letter-spacing:-.01em; }
+  h2 { font-size:1.05rem; margin:2.4rem 0 .6rem; }
+  .sub { color:var(--dim); margin:0 0 2rem; font-size:.94rem; }
+  ul { padding-left:1.1rem; } li { margin:.35rem 0; }
+  code { font:.88em ui-monospace,SFMono-Regular,Menlo,monospace; background:color-mix(in srgb, var(--fg) 8%, transparent);
+         padding:.1em .35em; border-radius:3px; }
+  hr { border:0; border-top:1px solid var(--line); margin:3rem 0 2rem; }
+  a { color:var(--accent); }
+  .lede { border-left:2px solid var(--accent); padding-left:1rem; margin:1.5rem 0; }
+  footer { color:var(--dim); font-size:.86rem; margin-top:3rem; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Asgard — Privacy Policy</h1>
+<p class="sub">Last updated 30 July 2026 · applies to the Asgard CLI and the Asgard desktop extension (<code>.mcpb</code>)</p>
+
+<p class="lede">Asgard runs entirely on your own machine. The author operates no servers, receives no copy of your data, and has no way to see whether you use it at all.</p>
+
+<h2>What the author collects</h2>
+<p>Nothing. There is no telemetry, no analytics, no crash reporting, and no update check. Asgard makes no network request to any endpoint controlled by the author.</p>
+
+<h2>What leaves your machine, and where it goes</h2>
+<p>Three kinds of request, all of them to destinations you chose:</p>
+<ul>
+  <li><strong>Your news sources.</strong> Asgard fetches the feed URLs listed in your own <code>feeds.yaml</code>.</li>
+  <li><strong>Article pages.</strong> When you give Asgard a link, it fetches that page to read the text.</li>
+  <li><strong>Your model endpoint.</strong> Whatever <code>OPENAI_BASE_URL</code> points at — OpenAI by default, or any OpenAI-compatible provider you configure.</li>
+</ul>
+
+<h2>What the model endpoint receives</h2>
+<p>This is the part worth reading closely. For every article Asgard analyses, it sends to your chosen model provider:</p>
+<ul>
+  <li>the text of the article, and</li>
+  <li><strong>the full contents of your profile file</strong> — every line, not only the ones that turn out to be relevant. The analysis works by asking the model to judge one article against your whole profile, so the whole profile is in the prompt.</li>
+</ul>
+<p>Whatever you write in your profile is therefore disclosed to that provider, and their privacy policy — not this one — governs what happens to it. If there are things you would rather not send to a model provider, do not put them in your profile.</p>
+
+<h2>Your API key</h2>
+<p>The key you supply (through the extension's settings, or as an environment variable for the CLI) is used solely to authenticate to the endpoint you configured. It is never written into Asgard's configuration files, never included in a brief, never printed to logs, and never sent anywhere else.</p>
+
+<h2>What is stored, and where</h2>
+<p>Only on your own disk, by default under <code>~/.asgard/</code>:</p>
+<ul>
+  <li><code>profile.yaml</code>, <code>feeds.yaml</code>, <code>config.yaml</code> — files you create and control.</li>
+  <li><code>briefs/</code> — the briefs Asgard writes, in Markdown and HTML.</li>
+</ul>
+<p>These stay on your machine until you delete them. There is no cloud copy and no retention schedule, because there is nowhere else for them to be.</p>
+
+<h2>Children</h2>
+<p>Asgard is a developer tool and is not directed at children under 13.</p>
+
+<h2>Changes</h2>
+<p>Material changes to this policy will be published on this page with a new date, and noted in the repository's release notes.</p>
+
+<h2>Contact</h2>
+<p>Questions or concerns: <a href="https://github.com/rockychan112/asgard/issues">open an issue</a> on the repository.</p>
+
+<hr>
+
+<h1 lang="zh">Asgard — 隐私政策</h1>
+<p class="sub" lang="zh">2026 年 7 月 30 日更新 · 适用于 Asgard 命令行工具与桌面扩展（<code>.mcpb</code>）</p>
+
+<p class="lede" lang="zh">Asgard 完全跑在你自己的机器上。作者不运营任何服务器，拿不到你的任何数据，也无从知道你有没有在用。</p>
+
+<h2 lang="zh">作者收集什么</h2>
+<p lang="zh">什么都不收。没有遥测、没有埋点、没有崩溃上报、没有更新检查。Asgard 不会向任何作者控制的地址发起请求。</p>
+
+<h2 lang="zh">什么会离开你的机器，去哪儿</h2>
+<ul lang="zh">
+  <li><strong>你的信源</strong>——抓取你自己 <code>feeds.yaml</code> 里列的地址。</li>
+  <li><strong>文章页面</strong>——你给了链接时，会去取那一页的正文。</li>
+  <li><strong>你的模型端点</strong>——<code>OPENAI_BASE_URL</code> 指向哪儿就是哪儿，默认 OpenAI，也可以是任何 OpenAI 兼容的服务商。</li>
+</ul>
+
+<h2 lang="zh">模型端点会收到什么</h2>
+<p lang="zh">这段值得细看。每分析一条新闻，Asgard 会把这些发给你选的模型服务商：</p>
+<ul lang="zh">
+  <li>文章正文，以及</li>
+  <li><strong>你资料文件的全部内容</strong>——每一行都发，不只是最后用上的那几行。因为判断的做法就是让模型拿一条新闻对着你的整份资料看。</li>
+</ul>
+<p lang="zh">所以你写进资料里的东西，都会披露给那家服务商，之后怎么处理由<strong>他们的</strong>隐私政策决定，不由这份。不想让模型服务商看到的内容，就别写进资料。</p>
+
+<h2 lang="zh">你的 API key</h2>
+<p lang="zh">你提供的 key（桌面扩展在设置里收，命令行走环境变量）只用于向你配置的那个端点鉴权。它不会写进 Asgard 的配置文件、不会出现在简报里、不会打进日志，也不会发去别处。</p>
+
+<h2 lang="zh">存了什么，存在哪</h2>
+<p lang="zh">只在你自己的磁盘上，默认在 <code>~/.asgard/</code>：资料 / 信源 / 配置三个文件由你自己创建和掌握，<code>briefs/</code> 放生成的简报（Markdown 和 HTML）。这些文件留到你自己删为止——没有云端副本，也谈不上保留期限，因为它们本来就没别的地方可去。</p>
+
+<h2 lang="zh">联系方式</h2>
+<p lang="zh">有疑问：到仓库<a href="https://github.com/rockychan112/asgard/issues">提 issue</a>。</p>
+
+<footer>Asgard · MIT · <a href="https://github.com/rockychan112/asgard">github.com/rockychan112/asgard</a></footer>
+
+</main>
+</body>
+</html>

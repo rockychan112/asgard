@@ -1,0 +1,80 @@
+{
+  "manifest_version": "0.3",
+  "name": "asgard",
+  "display_name": "Asgard",
+  "version": "0.0.1",
+  "description": "Reads the day's news for one person: neutral facts first, then what they mean for you — and an honest skip when they mean nothing.",
+  "long_description": "Asgard separates the fact layer from the interpretation layer. Every article is reduced once to neutral facts that hold for any reader (S-1, S-2 …), and only the interpretation changes from person to person. Each judgement has to cite the lines of your own profile it used (P-role, P-goal …), and a judgement that cannot cite anything is dropped rather than padded out. News that has nothing to do with you is skipped and says so.\n\nEverything runs on your machine against your own model endpoint. Nothing is reported back to the author.\n\nThe repository ships a public counterfactual evaluation that tries to falsify the project's own claim — change one profile line and only the judgements resting on that line should move. It found no specificity advantage over a long prompt; what it did find was better skip discipline and citations you can audit. That result is published rather than buried.",
+  "author": {
+    "name": "rockychan112",
+    "url": "https://github.com/rockychan112"
+  },
+  "homepage": "https://rockychan112.github.io/asgard/",
+  "documentation": "https://github.com/rockychan112/asgard#readme",
+  "support": "https://github.com/rockychan112/asgard/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rockychan112/asgard"
+  },
+  "privacy_policies": [
+    "https://rockychan112.github.io/asgard/privacy.html"
+  ],
+  "server": {
+    "type": "python",
+    "entry_point": "server/main.py",
+    "mcp_config": {
+      "command": "python3",
+      "args": ["${__dirname}/server/main.py"],
+      "env": {
+        "PYTHONPATH": "${__dirname}/server/lib",
+        "OPENAI_API_KEY": "${user_config.openai_api_key}",
+        "OPENAI_BASE_URL": "${user_config.openai_base_url}",
+        "ASGARD_MODEL": "${user_config.asgard_model}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "asgard_status",
+      "description": "Check whether Asgard is set up on this machine and whose profile it is serving."
+    },
+    {
+      "name": "asgard_brief",
+      "description": "Read one news item — a link, pasted text, or a built-in sample — and say what it means for you, or skip it."
+    },
+    {
+      "name": "asgard_daily",
+      "description": "Pull the day's news from your feeds, read each item against your profile, and write one brief."
+    }
+  ],
+  "user_config": {
+    "openai_api_key": {
+      "type": "string",
+      "title": "Model API key",
+      "description": "The key for the model endpoint you want Asgard to use. It is passed to that endpoint and nowhere else, and is never written into Asgard's config files.",
+      "sensitive": true,
+      "required": true
+    },
+    "openai_base_url": {
+      "type": "string",
+      "title": "Model endpoint",
+      "description": "Any OpenAI-compatible endpoint. Leave as-is for OpenAI itself.",
+      "default": "https://api.openai.com/v1",
+      "required": false
+    },
+    "asgard_model": {
+      "type": "string",
+      "title": "Model",
+      "description": "Which model to ask, e.g. gpt-4o-mini or deepseek-chat. Leave blank for the endpoint's default.",
+      "required": false
+    }
+  },
+  "compatibility": {
+    "platforms": ["darwin"],
+    "runtimes": {
+      "python": ">=3.11,<4.0"
+    }
+  },
+  "keywords": ["news", "briefing", "personalization", "rss", "daily"],
+  "license": "MIT"
+}

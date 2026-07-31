@@ -119,6 +119,18 @@ facts:
 
 `brief`（折射单条新闻）、`daily`（按信源列表出整份日报，md/html 可选、可配 cron 定时）、`doctor`（配置体检）、`eval`（跑考卷）、skill 每日简报（见上）能用；推送到 IM 和长期记忆还没做。
 
+## Privacy Policy · 隐私政策
+
+完整版：[rockychan112.github.io/asgard/privacy.html](https://rockychan112.github.io/asgard/privacy.html)
+
+要点：
+
+- **作者收不到任何东西**——没有遥测、没有埋点、没有崩溃上报，Asgard 不向任何作者控制的地址发请求。
+- **出网只有三处**，去向都是你自己选的：你列的信源、你给的文章链接、你配的模型端点。
+- **模型端点会收到你整份资料**，不只是最后用上的那几行——判断的做法就是拿一条新闻对着你的整份资料看。之后怎么处理由那家服务商的政策决定。不想让它看到的，别写进资料。
+- **API key** 只用于向你配置的端点鉴权，不写进配置文件、不进简报、不打日志。
+- **文件都在你自己的磁盘上**（默认 `~/.asgard/`），留到你自己删。
+
 ## License
 
 [MIT](LICENSE) · Copyright (c) 2026 rockychan112

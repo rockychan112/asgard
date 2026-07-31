@@ -119,6 +119,18 @@ That's exactly what the exam watches. The skip cards in the demo are real output
 
 `brief` (refract one news item), `daily` (a full brief from your feed list — md/html, cron-schedulable), `doctor` (config health check), `eval` (run the exam), and the daily-brief skill (above) work. IM delivery and long-term memory aren't built yet.
 
+## Privacy Policy
+
+Full text: [rockychan112.github.io/asgard/privacy.html](https://rockychan112.github.io/asgard/privacy.html)
+
+The short version:
+
+- **The author receives nothing.** No telemetry, no analytics, no crash reporting. Asgard makes no request to any endpoint the author controls.
+- **Three kinds of request leave your machine**, all to destinations you chose: the feeds you listed, the article links you hand it, and the model endpoint you configured.
+- **Your model provider receives your entire profile**, not only the lines that turn out to matter — the analysis works by judging one article against the whole profile. What happens to it after that is governed by their policy. If you'd rather not send something to a model provider, don't put it in your profile.
+- **Your API key** authenticates to that endpoint and nothing else. It is never written into config files, never included in a brief, never logged.
+- **Everything is stored on your own disk** (`~/.asgard/` by default) until you delete it.
+
 ## License
 
 [MIT](LICENSE) · Copyright (c) 2026 rockychan112

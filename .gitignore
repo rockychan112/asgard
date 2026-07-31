@@ -9,3 +9,6 @@ dist/
 build/
 eval/report.md
 briefs/
+
+# desktop extension build artefacts (dist/ is already ignored above)
+mcpb/server/lib/
