@@ -30,20 +30,31 @@
 
 ## 装进你的 agent，每天收一份
 
-Asgard 可以当作 skill 装进 Claude Code / Codex / Cursor 这类 agent：每天自动读你订阅的新闻源，把一份日报落到 `briefs/2026-07-15.md`。
+装进去的是**协议**——资料契约、引用纪律、跳过规则——不是一段魔法提示词。
+
+**宿主支持 MCP**（Claude Desktop、Claude Code、Codex、新版 Cursor）：装扩展，它会真的调用本机引擎。
+
+- Claude Desktop：从 [Releases](https://github.com/rockychan112/asgard/releases/latest) 下载 `asgard-0.0.1.mcpb`，双击安装，在弹出的设置页填模型 key。key 只留在本机，不写进任何配置文件。
+- 其它 MCP 宿主：clone 仓库后指向 `asgard-mcp` 命令，例如
+  `codex mcp add asgard -- /你的路径/asgard-mcp`
+
+装完直接说话：
+
+- 「这条新闻跟我有什么关系」+ 一段正文或一个链接
+- 「给我今天的简报」——按你的信源列表拉当日新闻，落一份日报到 `~/.asgard/briefs/`
+- 「Asgard 配好了吗」——没配好会告诉你缺什么、下一步做什么
+
+跟你无关的新闻它会跳过并说明理由。这是它在干活，不是没找到。
+
+**宿主不支持 MCP**：装 skill，由你的 agent 直接按协议跑。
 
 ```bash
 npx skills add https://github.com/rockychan112/asgard
 ```
 
-三步：装 skill → 对 agent 说一句「asgard 今日简报」——首次运行它会自动引导你完成安装（clone 仓库、访谈式建资料、配模型端点，真跑通一次才算装好）→ 给 agent 设一个每日任务（宿主没有定时功能，就每天说一句，一样能用）。
+对 agent 说一句「asgard 今日简报」，首次运行会引导你装好（clone 仓库、访谈式建资料、配模型端点，真跑通一次才算完成）。日报头部会标 `engine: llm`——诚实降级，仓库里的考卷只为本机引擎那条路径背书。
 
-skill 装进去的是**协议**——资料契约、引用纪律、跳过规则——不是一段魔法提示词。
-
-两点说在前面：
-
-- 本机装了 `asgard` 命令行时，skill 会优先调用它（引用校验硬执行）；没装就由你的 agent 直接按协议跑，日报头部会标 `engine: llm`——诚实降级，仓库里的考卷只为命令行路径背书。
-- 当天全部无关时也会生成日报，内容是「今天没有值得你看的，检查了 N 条」。这是它在干活，不是坏了。
+当天全部无关时也会生成日报，内容是「今天没有值得你看的，检查了 N 条」。
 
 不想经过 agent？`asgard daily` 一条命令做同一件事（拉信源 → 逐条折射 → 落日报），配上系统定时就是纯本地方案：见 [docs/cron.md](docs/cron.md)。
 

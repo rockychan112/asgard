@@ -30,20 +30,31 @@ Same news, four people, four different results:
 
 ## Install into your agent, get one brief a day
 
-Asgard also ships as a skill for agents like Claude Code / Codex / Cursor: every day it reads your feeds and drops a brief at `briefs/2026-07-15.md`.
+What gets installed is a **protocol** — the fact contract, the citation rule, the skip rule — not a magic prompt.
+
+**If your host speaks MCP** (Claude Desktop, Claude Code, Codex, recent Cursor): install the extension and it calls the engine on your machine for real.
+
+- Claude Desktop: download `asgard-0.0.1.mcpb` from [Releases](https://github.com/rockychan112/asgard/releases/latest), double-click to install, and fill in your model key on the settings page that appears. The key stays on your machine and is never written into a config file.
+- Any other MCP host: clone the repo and point it at the `asgard-mcp` command, e.g.
+  `codex mcp add asgard -- /your/path/asgard-mcp`
+
+Then just talk to it:
+
+- "What does this news mean for me" plus a link or some pasted text
+- "Give me today's brief" — pulls the day's news from your feeds and writes one brief to `~/.asgard/briefs/`
+- "Is Asgard set up?" — if it isn't, you get told what's missing and what to do next
+
+News that has nothing to do with you gets skipped, with the reason. That's the product working, not coming up empty.
+
+**If your host doesn't speak MCP**: install the skill and your agent runs the protocol itself.
 
 ```bash
 npx skills add https://github.com/rockychan112/asgard
 ```
 
-Three steps: install the skill → say "asgard daily brief" once — on first run it walks you through setup itself (clones the repo, interviews your profile, wires your model endpoint, and doesn't call it done until a real run works) → have the agent schedule a daily job (no scheduler? just say it whenever — it still works).
+Say "asgard daily brief" once and the first run walks you through setup (clones the repo, interviews your profile, wires your model endpoint, and doesn't call it done until a real run works). The brief is tagged `engine: llm` — an honest downgrade; the repo's eval only vouches for the path that runs the engine.
 
-What the skill installs is a **protocol** — the fact contract, the citation rule, the skip rule — not a magic prompt.
-
-Two things up front:
-
-- With the `asgard` CLI installed, the skill calls it (citation checks enforced in code); without it, your agent runs the protocol itself and the brief is honestly tagged `engine: llm` — the repo's eval only vouches for the CLI path.
-- On a day when nothing concerns you, the brief still arrives: "Nothing worth your time today, checked N items." That's the product working, not failing.
+On a day when nothing concerns you, the brief still arrives: "Nothing worth your time today, checked N items."
 
 Rather not go through an agent? `asgard daily` does the same thing in one command (fetch feeds → refract each item → write the brief); add your OS scheduler and it's fully local: see [docs/cron.md](docs/cron.md).
 
