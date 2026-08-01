@@ -5,6 +5,7 @@
   "version": "0.0.1",
   "description": "Reads the day's news for one person: neutral facts first, then what they mean for you — and an honest skip when they mean nothing.",
   "long_description": "Asgard separates the fact layer from the interpretation layer. Every article is reduced once to neutral facts that hold for any reader (S-1, S-2 …), and only the interpretation changes from person to person. Each judgement has to cite the lines of your own profile it used (P-role, P-goal …), and a judgement that cannot cite anything is dropped rather than padded out. News that has nothing to do with you is skipped and says so.\n\nEverything runs on your machine against your own model endpoint. Nothing is reported back to the author.\n\nThe repository ships a public counterfactual evaluation that tries to falsify the project's own claim — change one profile line and only the judgements resting on that line should move. It found no specificity advantage over a long prompt; what it did find was better skip discipline and citations you can audit. That result is published rather than buried.",
+  "icon": "icon.png",
   "author": {
     "name": "rockychan112",
     "url": "https://github.com/rockychan112"
@@ -24,7 +25,9 @@
     "entry_point": "server/main.py",
     "mcp_config": {
       "command": "python3",
-      "args": ["${__dirname}/server/main.py"],
+      "args": [
+        "${__dirname}/server/main.py"
+      ],
       "env": {
         "PYTHONPATH": "${__dirname}/server/lib",
         "OPENAI_API_KEY": "${user_config.openai_api_key}",
@@ -70,11 +73,19 @@
     }
   },
   "compatibility": {
-    "platforms": ["darwin"],
+    "platforms": [
+      "darwin"
+    ],
     "runtimes": {
       "python": ">=3.11,<4.0"
     }
   },
-  "keywords": ["news", "briefing", "personalization", "rss", "daily"],
+  "keywords": [
+    "news",
+    "briefing",
+    "personalization",
+    "rss",
+    "daily"
+  ],
   "license": "MIT"
 }

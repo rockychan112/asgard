@@ -1,0 +1,45 @@
+<!doctype html>
+<!-- Source for mcpb/icon.png. Render with:
+     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new \
+       --screenshot=../mcpb/icon.png --window-size=512,512 --force-device-scale-factor=1 \
+       --default-background-color=00000000 --hide-scrollbars file://$PWD/icon.html -->
+<html><head><meta charset="utf-8">
+<style>
+  html,body { margin:0; padding:0; background:transparent; }
+  svg { display:block; }
+</style></head>
+<body>
+<!-- Same composition as the brief masthead (one beam in, four accent beams out),
+     recomposed square and pushed harder: the masthead fades rays to zero, which
+     disappears at icon sizes. Colours are the four card accents, unchanged. -->
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="r0" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e6b450" stop-opacity="1"/><stop offset="1" stop-color="#e6b450" stop-opacity=".5"/></linearGradient>
+    <linearGradient id="r1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#43c6b8" stop-opacity="1"/><stop offset="1" stop-color="#43c6b8" stop-opacity=".5"/></linearGradient>
+    <linearGradient id="r2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9a86f0" stop-opacity="1"/><stop offset="1" stop-color="#9a86f0" stop-opacity=".5"/></linearGradient>
+    <linearGradient id="r3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e08bb0" stop-opacity="1"/><stop offset="1" stop-color="#e08bb0" stop-opacity=".5"/></linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9aa3b7" stop-opacity=".35"/><stop offset="1" stop-color="#c8cedd" stop-opacity=".95"/></linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#aeb6c9" stop-opacity=".30"/><stop offset="1" stop-color="#7d879e" stop-opacity=".16"/></linearGradient>
+  </defs>
+
+  <!-- the one neutral beam going in -->
+  <rect x="245" y="40" width="22" height="136" rx="4" fill="url(#beam)"/>
+
+  <!-- four beams coming out, one per reader -->
+  <polygon fill="url(#r0)" points="245,314 267,314 122,470  66,470"/>
+  <polygon fill="url(#r1)" points="245,314 267,314 236,470 180,470"/>
+  <polygon fill="url(#r2)" points="245,314 267,314 332,470 276,470"/>
+  <polygon fill="url(#r3)" points="245,314 267,314 446,470 390,470"/>
+
+  <!-- the prism itself -->
+  <polygon points="256,166 330,316 182,316" fill="url(#glass)" stroke="#7d879e" stroke-width="7"
+           stroke-linejoin="round"/>
+  <line x1="256" y1="186" x2="297" y2="296" stroke="#aeb6c9" stroke-width="5" stroke-linecap="round" opacity=".75"/>
+</svg>
+</body></html>
